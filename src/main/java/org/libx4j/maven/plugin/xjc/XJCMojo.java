@@ -18,7 +18,6 @@ package org.libx4j.maven.plugin.xjc;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
@@ -40,8 +39,6 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
-import org.lib4j.io.Streams;
-import org.lib4j.io.scanner.InputStreamScanner;
 
 /**
  * Mojo that creates compile-scope Java source or binaries from XML schema(s) by
