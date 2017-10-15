@@ -36,7 +36,7 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.lib4j.maven.mojo.GeneratorMojo;
 import org.lib4j.maven.mojo.MojoUtil;
-import org.lib4j.net.URLs;
+import org.lib4j.maven.mojo.ResourceLabel;
 import org.lib4j.util.Collections;
 import org.lib4j.xml.jaxb.XJCompiler;
 
@@ -90,27 +90,6 @@ public final class XJCMojo extends GeneratorMojo {
   // the specification.
   @Parameter(property = "extension")
   private boolean extension = false;
-
-  public static class ExtraFacets {
-    public static class ExtraFacet {
-      private String implementation;
-    }
-
-    private List<ExtraFacet> extraFacet;
-  }
-
-  // Defines a set of extra EnvironmentFacet instances which are used to
-  // further configure the ToolExecutionEnvironment used by this plugin to fire
-  // XJC or SchemaGen.
-  //
-  // Example: If you implement the EnvironmentFacet interface in the class
-  // org.acme.MyCoolEnvironmentFacetImplementation, its setup() method is
-  // called before the XJC or SchemaGen tools are executed to setup some facet
-  // of their Execution environment. Correspondingly, the restore() method in
-  // your org.acme.MyCoolEnvironmentFacetImplementation class is invoked after
-  // the XJC or SchemaGen execution terminates.
-  @Parameter(property = "extraFacets")
-  private ExtraFacets extraFacets;
 
   // Corresponding XJC parameter: episode.
   //
@@ -189,55 +168,22 @@ public final class XJCMojo extends GeneratorMojo {
   @Parameter(property = "verbose")
   private boolean verbose = false;
 
-  public static class XjbExcludeFilters {
-    public static class Filter {
-      private String implementation;
-
-      public static class Patterns {
-        private List<String> pattern;
-      }
-
-      private Patterns patterns;
-    }
-
-    private List<Filter> filter;
-  }
-
-  // Parameter holding a List of Filters, used to match all files under the
-  // xjbSources directories which should not be considered XJB files. (The
-  // filters identify files to exclude, and hence this parameter is called
-  // xjbExcludeFilters). If a file matches at least one of the supplied
-  // Filters, it is not considered an XJB file, and therefore excluded from
-  // processing.
+  // Parameter holding List of XSD paths to files and/or directories which
+  // should be recursively searched for XSD files. Only files or directories
+  // that actually exist will be included (in the case of files) or recursively
+  // searched for XSD files to include (in the case of directories). Configure
+  // using standard Maven structure for Lists:
   //
-  // If not explicitly provided, the Mojo uses the value within
-  // STANDARD_XJB_EXCLUDE_FILTERS.
-  //
-  // Example: The following configuration would exclude any XJB files whose
-  // names end with xml or foo:
-  //
-  //  <configuration>
-  //  ...
-  //  <xjbExcludeFilters>
-  //  <filter
-  // implementation='org.codehaus.mojo.jaxb2.shared.filters.pattern.PatternFileFilter'>
-  //  <patterns>
-  //  <pattern>\.txt</pattern>
-  //  <pattern>\.foo</pattern>
-  //  </patterns>
-  //  </filter>
-  //  </xjbExcludeFilters>
-  //  ...
-  //  </configuration>
-  //
-  //
-  // Note that inner workings of the Dependency Injection mechanism used by
-  // Maven Plugins (i.e. the DI from the Plexus container) requires that the
-  // full class name to the Filter implementation should be supplied for each
-  // filter, as is illustrated in the sample above. This is true also if you
-  // implement custom Filters.
-  @Parameter(property = "xjbExcludeFilters")
-  private XjbExcludeFilters xjbExcludeFilters;
+  // <configuration>
+  // ...
+  // <schemas>
+  // <schema>some/explicit/relative/file.xsd</schema>
+  // <schema>/another/absolute/path/to/a/specification.xsd</schema>
+  // <schema>a/directory/holding/xsds</schema>
+  // </schemas>
+  // </configuration>
+  @Parameter(property = "schemas", required = true)
+  private List<String> schemas;
 
   // Parameter holding List of XJB Files and/or directories which should be
   // recursively searched for XJB files. Only files or directories that
@@ -254,77 +200,15 @@ public final class XJCMojo extends GeneratorMojo {
   //  <xjb>bindings/config/directory</xjb>
   //  </xjbs>
   //  </configuration>
-  @Parameter(property = "xjbs")
-  private List<String> xjbs;
+  @Parameter(property = "bindings")
+  private List<String> bindings;
 
-  // Parameter holding a List of Filters, used to match all files under the
-  // sources directories which should not be considered XJC source files. (The
-  // filters identify files to exclude, and hence this parameter is called
-  // xjcSourceExcludeFilters). If a file under any of the source directories
-  // matches at least one of the Filters supplied in the
-  // xjcSourceExcludeFilters, it is not considered an XJC source file, and
-  // therefore excluded from processing.
-  //
-  // If not explicitly provided, the Mojo uses the value within
-  // STANDARD_SOURCE_EXCLUDE_FILTERS. The algorithm for finding XJC sources is
-  // as follows:
-  //
-  // 1.  Find all files given in the sources List. Any Directories provided are
-  //   searched for files recursively.
-  // 2.  Exclude any found files matching any of the supplied
-  //   xjcSourceExcludeFilters List.
-  // 3.  The remaining Files are submitted for processing by the XJC tool.
-  //
-  // Example: The following configuration would exclude any sources whose names
-  // end with txt or foo:
-  //
-  //  <configuration>
-  //  ...
-  //  <xjcSourceExcludeFilters>
-  //  <filter
-  // implementation='org.codehaus.mojo.jaxb2.shared.filters.pattern.PatternFileFilter'>
-  //  <patterns>
-  //  <pattern>\.txt</pattern>
-  //  <pattern>\.foo</pattern>
-  //  </patterns>
-  //  </filter>
-  //  </xjcSourceExcludeFilters>
-  //  </configuration>
-  //
-  // Note that inner workings of the Dependency Injection mechanism used by
-  // Maven Plugins (i.e. the DI from the Plexus container) requires that the
-  // full class name to the Filter implementation should be supplied for each
-  // filter, as is illustrated in the sample above. This is true also if you
-  // implement custom Filters.
-  @Parameter(property = "xjcSourceExcludeFilters")
-  private XjbExcludeFilters xjcSourceExcludeFilters;
-
-  // If provided, this parameter indicates that the XSDs used by XJC to
-  // generate Java code should be copied into the resulting artifact of this
-  // project (the JAR, WAR or whichever artifact type is generated). The value
-  // of the xsdPathWithinArtifact parameter is the relative path within the
-  // artifact where all source XSDs are copied to (hence the name 'XSD Path
-  // Within Artifact').
-  //
-  // The target directory is created within the artifact if it does not already
-  // exist. If the xsdPathWithinArtifact parameter is not given, the XSDs used
-  // to generate Java code are not included within the project's artifact.
-  //
-  // Example:Adding the sample configuration below would copy all source XSDs
-  // to the given directory within the resulting JAR (and/or test-JAR). If the
-  // directory META-INF/jaxb/xsd does not exist, it will be created.
-  //
-  //  <configuration>
-  //  ...
-  //  <xsdPathWithinArtifact>META-INF/jaxb/xsd</xsdPathWithinArtifact>
-  //  </configuration>
-  //
-  //
-  // Note: This parameter was previously called includeSchemasOutputPath in the
-  // 1.x versions of this plugin, but was renamed and re-documented for
-  // improved usability and clarity.
-  @Parameter(property = "xsdPathWithinArtifact")
-  private String xsdPathWithinArtifact;
+  @Override
+  @SuppressWarnings("unchecked")
+  @ResourceLabel(label = {"schemas", "bindings"}, nonEmpty = {true, false})
+  protected List<String>[] getResources() {
+    return new List[] {schemas, bindings};
+  }
 
   @Parameter(defaultValue = "${localRepository}")
   private ArtifactRepository localRepository;
@@ -347,15 +231,6 @@ public final class XJCMojo extends GeneratorMojo {
 
       command.setVerbose(verbose);
 
-      // TODO:...
-      if (xjbExcludeFilters != null);
-
-      // TODO:...
-      if (xjcSourceExcludeFilters != null);
-
-      // TODO:...
-      if (xsdPathWithinArtifact != null);
-
       if (sourceType != null)
         command.setSourceType(XJCompiler.Command.SourceType.fromString(sourceType));
 
@@ -364,15 +239,9 @@ public final class XJCMojo extends GeneratorMojo {
       command.setDestDir(configuration.getDestDir());
       command.setOverwrite(configuration.isOverwrite());
       command.setGenerateEpisode(generateEpisode);
-      command.setSchemas(Collections.asCollection(new LinkedHashSet<URL>(), configuration.getResources()));
-
-      if (this.xjbs != null && this.xjbs.size() > 0) {
-        final LinkedHashSet<URL> xjbs = new LinkedHashSet<URL>();
-        for (final String xjb : this.xjbs)
-          xjbs.add(URLs.isAbsolute(xjb) ? URLs.makeUrlFromPath(xjb) : URLs.makeUrlFromPath(project.getBasedir().getAbsolutePath(), xjb));
-
-        command.setXJBs(xjbs);
-      }
+      command.setSchemas(Collections.asCollection(new LinkedHashSet<URL>(), configuration.getResources(0)));
+      if (configuration.getResources(1) != null)
+        command.setXJBs(Collections.asCollection(new LinkedHashSet<URL>(), configuration.getResources(1)));
 
       final List<String> classpath = MojoUtil.getPluginDependencyClassPath((PluginDescriptor)this.getPluginContext().get("pluginDescriptor"), localRepository, artifactHandler);
       classpath.addAll(project.getCompileClasspathElements());
