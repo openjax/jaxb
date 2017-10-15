@@ -34,11 +34,11 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
+import org.lib4j.maven.mojo.GeneratorMojo;
+import org.lib4j.maven.mojo.MojoUtil;
 import org.lib4j.net.URLs;
 import org.lib4j.util.Collections;
 import org.lib4j.xml.jaxb.XJCompiler;
-import org.libx4j.maven.specification.GeneratorMojo;
-import org.libx4j.maven.specification.MojoUtil;
 
 /**
  * Mojo that creates compile-scope Java source or binaries from XML schema(s) by
