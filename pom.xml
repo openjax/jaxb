@@ -110,6 +110,12 @@
       </build>
     </profile-->
   </profiles>
+  <dependencies>
+    <dependency>
+      <groupId>org.lib4j</groupId>
+      <artifactId>lib4j-xml</artifactId>
+    </dependency>
+  </dependencies>
   <repositories>
     <repository>
       <id>mvn.repo.lib4j.org</id>

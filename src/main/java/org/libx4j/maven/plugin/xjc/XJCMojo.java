@@ -17,71 +17,52 @@
 package org.libx4j.maven.plugin.xjc;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.FileVisitOption;
-import java.nio.file.Files;
-import java.nio.file.NoSuchFileException;
-import java.nio.file.Path;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.net.URL;
+import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Scanner;
-import java.util.function.BiPredicate;
-import java.util.stream.Stream;
 
-import org.apache.maven.plugin.AbstractMojo;
-import org.apache.maven.plugin.MojoExecution;
+import javax.xml.bind.JAXBException;
+
+import org.apache.maven.artifact.handler.ArtifactHandler;
+import org.apache.maven.artifact.handler.DefaultArtifactHandler;
+import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugin.descriptor.PluginDescriptor;
 import org.apache.maven.plugins.annotations.Execute;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
-import org.apache.maven.project.MavenProject;
+import org.apache.maven.plugins.annotations.ResolutionScope;
+import org.lib4j.net.URLs;
+import org.lib4j.util.Collections;
+import org.lib4j.xml.jaxb.XJCompiler;
+import org.libx4j.maven.specification.GeneratorMojo;
+import org.libx4j.maven.specification.MojoUtil;
 
 /**
  * Mojo that creates compile-scope Java source or binaries from XML schema(s) by
- * invoking the JAXB XJC binding compiler. This implementation is tailored to use
- * the JAXB Reference Implementation from project Kenai.
- *
- * Note that the XjcMojo was completely re-implemented for the 2.x versions. Its
- * configuration semantics and parameter set is not necessarily backwards
- * compatible with the 1.x plugin versions. If you are upgrading from version 1.x
- * of the plugin, read the documentation carefully.
+ * invoking the JAXB XJC binding compiler.
  */
-@Mojo(name = "xjc", defaultPhase = LifecyclePhase.GENERATE_SOURCES)
+@Mojo(name = "xjc", defaultPhase = LifecyclePhase.GENERATE_SOURCES, requiresDependencyResolution = ResolutionScope.TEST)
 @Execute(goal = "xjc")
-public final class XJCMojo extends AbstractMojo {
-  @Parameter(defaultValue="${project}", readonly=true)
-  private MavenProject project;
-
-  @Parameter(defaultValue="${mojoExecution}", readonly=true)
-  private MojoExecution execution;
-
-  @Parameter(property="maven.test.skip", defaultValue="false")
-  private boolean mavenTestSkip;
-
+public final class XJCMojo extends GeneratorMojo {
   // Corresponding XJC parameter: mark-generated.
   // This feature causes all of the generated code to have @Generated annotation.
-  @Parameter(property="addGeneratedAnnotation")
+  @Parameter(property = "addGeneratedAnnotation")
   private boolean addGeneratedAnnotation = false;
 
   // Corresponding XJC parameter: catalog.
   // Specify catalog files to resolve external entity references. Supports
   // TR9401, XCatalog, and OASIS XML Catalog format.
-  @Parameter(property="catalog")
+  @Parameter(property = "catalog")
   private File catalog;
-
-  // Removes all files from the output directory before running XJC.
-  @Parameter(property="clearOutputDir")
-  private boolean clearOutputDir = true;
 
   // Corresponding XJC parameter: enableIntrospection.
   // Enable correct generation of Boolean getters/setters to enable Bean
   // Introspection APIs.
-  @Parameter(property="enableIntrospection")
-  private boolean enableIntrospection = false;
+  @Parameter(property = "enableIntrospection")
+  private boolean enableIntrospection = true;
 
   // Defines the encoding used by XJC (for generating Java Source files) and
   // schemagen (for generating XSDs). The corresponding argument parameter for
@@ -95,7 +76,7 @@ public final class XJCMojo extends AbstractMojo {
   // 2. If the Maven property project.build.sourceEncoding is defined, use its
   //    value.
   // 3. Otherwise use the value from the system property file.encoding.
-  @Parameter(property="encoding", defaultValue="${project.build.sourceEncoding}")
+  @Parameter(property = "encoding", defaultValue = "${project.build.sourceEncoding}")
   private String encoding;
 
   // Corresponding XJC parameter: extension.
@@ -107,7 +88,7 @@ public final class XJCMojo extends AbstractMojo {
   // '-extension' mode enabled by this switch. In the default (strict) mode,
   // you are also limited to using only the binding customizations defined in
   // the specification.
-  @Parameter(property="extension")
+  @Parameter(property = "extension")
   private boolean extension = false;
 
   public static class ExtraFacets {
@@ -128,12 +109,8 @@ public final class XJCMojo extends AbstractMojo {
   // of their Execution environment. Correspondingly, the restore() method in
   // your org.acme.MyCoolEnvironmentFacetImplementation class is invoked after
   // the XJC or SchemaGen execution terminates.
-  @Parameter(property="extraFacets")
+  @Parameter(property = "extraFacets")
   private ExtraFacets extraFacets;
-
-  // Fails the Mojo execution if no XSDs/schemas are found.
-  @Parameter(property="failOnNoSchemas")
-  private boolean failOnNoSchemas = true;
 
   // Corresponding XJC parameter: episode.
   //
@@ -144,8 +121,8 @@ public final class XJCMojo extends AbstractMojo {
   //
   // If this parameter is true, the episode file generated is called
   // META-INF/sun-jaxb.episode, and included in the artifact.
-  @Parameter(property="generateEpisode")
-  private boolean generateEpisode = true;
+  @Parameter(property = "generateEpisode")
+  private boolean generateEpisode = false;
 
   // Corresponding XJC parameter: nv.
   //
@@ -154,14 +131,14 @@ public final class XJCMojo extends AbstractMojo {
   // schema validation. This does not mean that the binding compiler will not
   // perform any validation, it simply means that it will perform less-strict
   // validation.
-  @Parameter(property="laxSchemaValidation")
+  @Parameter(property = "laxSchemaValidation")
   private boolean laxSchemaValidation = false;
 
   // Corresponding XJC parameter: no-header.
   //
   // Suppress the generation of a file header comment that includes some note
   // and timestamp. Using this makes the generated code more diff-friendly.
-  @Parameter(property="noGeneratedHeaderComments")
+  @Parameter(property = "noGeneratedHeaderComments")
   private boolean noGeneratedHeaderComments = false;
 
   // Corresponding XJC parameter: npa.
@@ -169,15 +146,8 @@ public final class XJCMojo extends AbstractMojo {
   // Suppress the generation of package level annotations into
   // package-info.java. Using this switch causes the generated code to
   // internalize those annotations into the other generated classes.
-  @Parameter(property="noPackageLevelAnnotations")
+  @Parameter(property = "noPackageLevelAnnotations")
   private boolean noPackageLevelAnnotations = false;
-
-  // Corresponding XJC parameter: d.
-  //
-  // The working directory where the generated Java source files are created.
-  // Required: Yes
-  @Parameter(property="outputDirectory", defaultValue="${project.build.directory}/generated-sources/jaxb")
-  private File outputDirectory;
 
   // Corresponding XJC parameter: p.
   //
@@ -185,45 +155,14 @@ public final class XJCMojo extends AbstractMojo {
   // XJC documentation: 'Specifying a target package via this command-line
   // option overrides any binding customization for package name and the
   // default package name algorithm defined in the specification'.
-  @Parameter(property="packageName")
+  @Parameter(property = "packageName")
   private String packageName;
 
   // Corresponding XJC parameter: quiet.
   // Suppress compiler output, such as progress information and warnings.
-  @Parameter(property="quiet")
+  @Parameter(property = "quiet")
   private boolean quiet = false;
 
-  // Corresponding XJC parameter: readOnly.
-  //
-  // By default, the XJC binding compiler does not write-protect the Java
-  // source files it generates. Use this option to force the XJC binding
-  // compiler to mark the generated Java sources read-only.
-  @Parameter(property="readOnly")
-  private boolean readOnly = false;
-
-  // Indicate if the XjcMojo execution should be skipped.
-  // User property: xjc.skip
-  @Parameter(property="xjc.skip")
-  private boolean skipXjc = false;
-
-  // Parameter holding List of XSD paths to files and/or directories which
-  // should be recursively searched for XSD files. Only files or directories
-  // that actually exist will be included (in the case of files) or recursively
-  // searched for XSD files to include (in the case of directories). Configure
-  // using standard Maven structure for Lists:
-  //
-  //  <configuration>
-  //  ...
-  //  <sources>
-  //  <source>some/explicit/relative/file.xsd</source>
-  //  <source>/another/absolute/path/to/a/specification.xsd</source>
-  //  <source>a/directory/holding/xsds</source>
-  //  </sources>
-  //  </configuration>
-  @Parameter(property="sources", required=true)
-  private List<File> sources;
-
-  private static final String[] sourceTypes = new String[] {"dtd", "wsdl", "xmlschema"};
   // Defines the content type of sources for the XJC. To simplify usage of the
   // JAXB2 maven plugin, all source files are assumed to have the same type of
   // content.
@@ -231,7 +170,7 @@ public final class XJCMojo extends AbstractMojo {
   // This parameter replaces the previous multiple-choice boolean configuration
   // options for the jaxb2-maven-plugin (i.e. dtd, xmlschema, wsdl), and
   // corresponds to setting one of those flags as an XJC argument.
-  @Parameter(property="sourceType")
+  @Parameter(property = "sourceType")
   private String sourceType = "xmlschema";
 
   // Corresponding XJC parameter: target.
@@ -239,15 +178,15 @@ public final class XJCMojo extends AbstractMojo {
   // Permitted values: '2.0' and '2.1'. Avoid generating code that relies on
   // JAXB newer than the version given. This will allow the generated code to
   // run with JAXB 2.0 runtime (such as JavaSE 6.).
-  @Parameter(property="target")
-  private String target;
+  @Parameter(property = "target")
+  private String targetVersion;
 
   // Corresponding XJC parameter: verbose.
   //
   // Tells XJC to be extra verbose, such as printing informational messages or
   // displaying stack traces.
   // User property: xjc.verbose
-  @Parameter(property="verbose")
+  @Parameter(property = "verbose")
   private boolean verbose = false;
 
   public static class XjbExcludeFilters {
@@ -297,12 +236,8 @@ public final class XJCMojo extends AbstractMojo {
   // full class name to the Filter implementation should be supplied for each
   // filter, as is illustrated in the sample above. This is true also if you
   // implement custom Filters.
-  @Parameter(property="xjbExcludeFilters")
+  @Parameter(property = "xjbExcludeFilters")
   private XjbExcludeFilters xjbExcludeFilters;
-
-  public static class XjbSources {
-    private List<File> xjbSource;
-  }
 
   // Parameter holding List of XJB Files and/or directories which should be
   // recursively searched for XJB files. Only files or directories that
@@ -314,13 +249,13 @@ public final class XJCMojo extends AbstractMojo {
   //
   //  <configuration>
   //  ...
-  //  <xjbSources>
-  //  <xjbSource>bindings/aBindingConfiguration.xjb</xjbSource>
-  //  <xjbSource>bindings/config/directory</xjbSource>
-  //  </xjbSources>
+  //  <xjbs>
+  //  <xjb>bindings/aBindingConfiguration.xjb</xjb>
+  //  <xjb>bindings/config/directory</xjb>
+  //  </xjbs>
   //  </configuration>
-  @Parameter(property="xjbSources")
-  private XjbSources xjbSources;
+  @Parameter(property = "xjbs")
+  private List<String> xjbs;
 
   // Parameter holding a List of Filters, used to match all files under the
   // sources directories which should not be considered XJC source files. (The
@@ -361,7 +296,7 @@ public final class XJCMojo extends AbstractMojo {
   // full class name to the Filter implementation should be supplied for each
   // filter, as is illustrated in the sample above. This is true also if you
   // implement custom Filters.
-  @Parameter(property="xjcSourceExcludeFilters")
+  @Parameter(property = "xjcSourceExcludeFilters")
   private XjbExcludeFilters xjcSourceExcludeFilters;
 
   // If provided, this parameter indicates that the XSDs used by XJC to
@@ -388,189 +323,81 @@ public final class XJCMojo extends AbstractMojo {
   // Note: This parameter was previously called includeSchemasOutputPath in the
   // 1.x versions of this plugin, but was renamed and re-documented for
   // improved usability and clarity.
-  @Parameter(property="xsdPathWithinArtifact")
+  @Parameter(property = "xsdPathWithinArtifact")
   private String xsdPathWithinArtifact;
 
+  @Parameter(defaultValue = "${localRepository}")
+  private ArtifactRepository localRepository;
+
   @Override
-  public void execute() throws MojoExecutionException, MojoFailureException {
-    final boolean inTestPhase = execution.getLifecyclePhase() != null && execution.getLifecyclePhase().contains("test");
-    if (mavenTestSkip && inTestPhase)
-      return;
-
-    if (skipXjc) {
-      getLog().info("Execution skipped.");
-      return;
-    }
-
-    final List<String> command = new ArrayList<String>();
-    command.add("xjc");
-    if (addGeneratedAnnotation)
-      command.add("-mark-generated");
-
-    if (catalog != null) {
-      command.add("-catalog");
-      command.add(catalog.getAbsolutePath());
-    }
-
-    if (enableIntrospection)
-      command.add("-enableIntrospection");
-
-    if (extension)
-      command.add("-extension");
-
-    // TODO:...
-    if (extraFacets != null);
-
-    if (laxSchemaValidation)
-      command.add("-nv");
-
-    if (noGeneratedHeaderComments)
-      command.add("-no-header");
-
-    if (noPackageLevelAnnotations)
-      command.add("-npa");
-
-    if (quiet)
-      command.add("-quiet");
-
-    if (readOnly)
-      command.add("-readOnly");
-
-    if (target != null) {
-      command.add("-target");
-      command.add(target);
-    }
-
-    if (verbose)
-      command.add("-verbose");
-
-    // TODO:...
-    if (xjbExcludeFilters != null);
-
-    // TODO:...
-    if (xjcSourceExcludeFilters != null);
-
-    // TODO:...
-    if (xsdPathWithinArtifact != null);
-
-    if (sourceType != null) {
-      if (Arrays.binarySearch(sourceTypes, sourceType) < 0)
-        throw new MojoExecutionException("Unknown sourceType: " + sourceType);
-
-      command.add("-" + sourceType);
-    }
-
-    if (encoding != null) {
-      command.add("-encoding");
-      command.add(encoding);
-    }
-
-    if (packageName != null) {
-      command.add("-p");
-      command.add(packageName);
-    }
-
-    if (outputDirectory != null) {
-      command.add("-d");
-      command.add(outputDirectory.getAbsolutePath());
-    }
-
+  public void execute(final Configuration configuration) throws MojoExecutionException, MojoFailureException {
+    final ArtifactHandler artifactHandler = new DefaultArtifactHandler("jar");
     try {
-      if (!outputDirectory.exists() && !outputDirectory.mkdirs()) {
-        throw new MojoExecutionException("Unable to create output directory " + outputDirectory.getAbsolutePath());
-      }
-      else if (clearOutputDir) {
-        for (final File file : outputDirectory.listFiles())
-          Files.walk(file.toPath()).map(Path::toFile).sorted((o1, o2) -> o2.compareTo(o1)).forEach(File::delete);
-      }
+      final XJCompiler.Command command = new XJCompiler.Command();
+      command.setAddGeneratedAnnotation(addGeneratedAnnotation);
+      command.setCatalog(catalog);
+      command.setEnableIntrospection(enableIntrospection);
+      command.setExtension(extension);
+      command.setLaxSchemaValidation(laxSchemaValidation);
+      command.setNoGeneratedHeaderComments(noGeneratedHeaderComments);
+      command.setNoPackageLevelAnnotations(noPackageLevelAnnotations);
+      command.setQuiet(quiet);
+      if (targetVersion != null)
+        command.setTargetVersion(XJCompiler.Command.TargetVersion.fromString(targetVersion));
 
-      if (generateEpisode) {
-        command.add("-episode");
-        final File metaInfDir = new File(outputDirectory, "META-INF" + File.separator + "sun-jaxb.episode");
-        if (!metaInfDir.getParentFile().mkdirs())
-          throw new MojoExecutionException("Unable to create output directory META-INF" + metaInfDir.getParentFile().getAbsolutePath());
+      command.setVerbose(verbose);
 
-        command.add(metaInfDir.getAbsolutePath());
-      }
+      // TODO:...
+      if (xjbExcludeFilters != null);
 
-      if (sources != null && sources != null) {
-        boolean found = false;
-        for (final File source : sources) {
-          try {
-            if (source.exists()) {
-              if (source.isFile()) {
-                found = source.getName().endsWith(".xsd");
-              }
-              else {
-                try (final Stream<Path> stream = Files.find(source.toPath(), 999, new BiPredicate<Path,BasicFileAttributes>() {
-                  @Override
-                  public boolean test(final Path t, final BasicFileAttributes u) {
-                    return t.endsWith(".xsd");
-                  }
-                }, FileVisitOption.FOLLOW_LINKS)) {
-                  found = stream.limit(1).count() == 1;
-                }
-              }
+      // TODO:...
+      if (xjcSourceExcludeFilters != null);
 
-              command.add(source.getAbsolutePath());
-            }
-            else {
-              getLog().warn("File not found: " + source.getAbsolutePath());
-            }
-          }
-          catch (final NoSuchFileException e) {
-            getLog().warn("File not found: " + e.getMessage());
-          }
-        }
+      // TODO:...
+      if (xsdPathWithinArtifact != null);
 
-        if (!found) {
-          if (failOnNoSchemas)
-            throw new MojoExecutionException("No XSDs/schemas found.");
+      if (sourceType != null)
+        command.setSourceType(XJCompiler.Command.SourceType.fromString(sourceType));
 
-          return;
-        }
+      command.setEncoding(encoding);
+      command.setPackageName(packageName);
+      command.setDestDir(configuration.getDestDir());
+      command.setOverwrite(configuration.isOverwrite());
+      command.setGenerateEpisode(generateEpisode);
+      command.setSchemas(Collections.asCollection(new LinkedHashSet<URL>(), configuration.getResources()));
+
+      if (this.xjbs != null && this.xjbs.size() > 0) {
+        final LinkedHashSet<URL> xjbs = new LinkedHashSet<URL>();
+        for (final String xjb : this.xjbs)
+          xjbs.add(URLs.isAbsolute(xjb) ? URLs.makeUrlFromPath(xjb) : URLs.makeUrlFromPath(project.getBasedir().getAbsolutePath(), xjb));
+
+        command.setXJBs(xjbs);
       }
 
-      if (xjbSources != null && xjbSources.xjbSource != null) {
-        for (final File xjbSource : xjbSources.xjbSource) {
-          command.add("-b");
-          command.add(xjbSource.getAbsolutePath());
-        }
+      final List<String> classpath = MojoUtil.getPluginDependencyClassPath((PluginDescriptor)this.getPluginContext().get("pluginDescriptor"), localRepository, artifactHandler);
+      classpath.addAll(project.getCompileClasspathElements());
+      classpath.addAll(project.getRuntimeClasspathElements());
+      if (isInTestPhase()) {
+        classpath.addAll(project.getTestClasspathElements());
+        classpath.addAll(MojoUtil.getProjectExecutionArtifactClassPath(project, localRepository, artifactHandler));
       }
 
-      final Process process = new ProcessBuilder(command).redirectErrorStream(true).start();
-      try (final Scanner scanner = new Scanner(process.getInputStream())) {
-        while (scanner.hasNextLine())
-          log(scanner.nextLine().trim());
+      final File[] classpathFiles = new File[classpath.size()];
+      for (int i = 0; i < classpathFiles.length; i++)
+        classpathFiles[i] = new File(classpath.get(i));
 
-        final StringBuilder lastLine = new StringBuilder();
-        while (scanner.hasNextByte())
-          lastLine.append(scanner.nextByte());
+      XJCompiler.compile(command, classpathFiles);
 
-        if (lastLine.length() > 0)
-          log(lastLine.toString());
-      }
-
-      final int exitCode = process.waitFor();
-      if (exitCode != 0)
-        throw new MojoExecutionException("xjc finished with code: " + exitCode);
+      if (isInTestPhase())
+        project.addTestCompileSourceRoot(configuration.getDestDir().getAbsolutePath());
+      else
+        project.addCompileSourceRoot(configuration.getDestDir().getAbsolutePath());
     }
-    catch (final InterruptedException | IOException e) {
+    catch (final JAXBException e) {
       throw new MojoExecutionException(e.getMessage(), e);
     }
-
-    if (inTestPhase)
-      project.addTestCompileSourceRoot(outputDirectory.getAbsolutePath());
-    else
-      project.addCompileSourceRoot(outputDirectory.getAbsolutePath());
-  }
-
-  private void log(final String line) {
-    if (line.startsWith("[ERROR] "))
-      getLog().error(line.substring(8));
-    else if (line.startsWith("[WARNING] "))
-      getLog().warn(line.substring(10));
-    else
-      getLog().info(line);
+    catch (final Throwable t) {
+      throw new MojoFailureException(t.getMessage(), t);
+    }
   }
 }
