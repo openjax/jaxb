@@ -44,24 +44,24 @@ import org.lib4j.xml.jaxb.XJCompiler;
  * Mojo that creates compile-scope Java source or binaries from XML schema(s) by
  * invoking the JAXB XJC binding compiler.
  */
-@Mojo(name = "xjc", defaultPhase = LifecyclePhase.GENERATE_SOURCES, requiresDependencyResolution = ResolutionScope.TEST)
-@Execute(goal = "xjc")
+@Mojo(name="xjc", defaultPhase=LifecyclePhase.GENERATE_SOURCES, requiresDependencyResolution=ResolutionScope.TEST)
+@Execute(goal="xjc")
 public final class XJCMojo extends GeneratorMojo {
   // Corresponding XJC parameter: mark-generated.
   // This feature causes all of the generated code to have @Generated annotation.
-  @Parameter(property = "addGeneratedAnnotation")
-  private boolean addGeneratedAnnotation = false;
+  @Parameter(property="addGeneratedAnnotation")
+  private boolean addGeneratedAnnotation=false;
 
   // Corresponding XJC parameter: catalog.
   // Specify catalog files to resolve external entity references. Supports
   // TR9401, XCatalog, and OASIS XML Catalog format.
-  @Parameter(property = "catalog")
+  @Parameter(property="catalog")
   private File catalog;
 
   // Corresponding XJC parameter: enableIntrospection.
   // Enable correct generation of Boolean getters/setters to enable Bean
   // Introspection APIs.
-  @Parameter(property = "enableIntrospection")
+  @Parameter(property="enableIntrospection")
   private boolean enableIntrospection = true;
 
   // Defines the encoding used by XJC (for generating Java Source files) and
@@ -76,7 +76,7 @@ public final class XJCMojo extends GeneratorMojo {
   // 2. If the Maven property project.build.sourceEncoding is defined, use its
   //    value.
   // 3. Otherwise use the value from the system property file.encoding.
-  @Parameter(property = "encoding", defaultValue = "${project.build.sourceEncoding}")
+  @Parameter(property="encoding", defaultValue="${project.build.sourceEncoding}")
   private String encoding;
 
   // Corresponding XJC parameter: extension.
@@ -88,7 +88,7 @@ public final class XJCMojo extends GeneratorMojo {
   // '-extension' mode enabled by this switch. In the default (strict) mode,
   // you are also limited to using only the binding customizations defined in
   // the specification.
-  @Parameter(property = "extension")
+  @Parameter(property="extension")
   private boolean extension = false;
 
   // Corresponding XJC parameter: episode.
@@ -100,7 +100,7 @@ public final class XJCMojo extends GeneratorMojo {
   //
   // If this parameter is true, the episode file generated is called
   // META-INF/sun-jaxb.episode, and included in the artifact.
-  @Parameter(property = "generateEpisode")
+  @Parameter(property="generateEpisode")
   private boolean generateEpisode = false;
 
   // Corresponding XJC parameter: nv.
@@ -110,14 +110,14 @@ public final class XJCMojo extends GeneratorMojo {
   // schema validation. This does not mean that the binding compiler will not
   // perform any validation, it simply means that it will perform less-strict
   // validation.
-  @Parameter(property = "laxSchemaValidation")
+  @Parameter(property="laxSchemaValidation")
   private boolean laxSchemaValidation = false;
 
   // Corresponding XJC parameter: no-header.
   //
   // Suppress the generation of a file header comment that includes some note
   // and timestamp. Using this makes the generated code more diff-friendly.
-  @Parameter(property = "noGeneratedHeaderComments")
+  @Parameter(property="noGeneratedHeaderComments")
   private boolean noGeneratedHeaderComments = false;
 
   // Corresponding XJC parameter: npa.
@@ -125,7 +125,7 @@ public final class XJCMojo extends GeneratorMojo {
   // Suppress the generation of package level annotations into
   // package-info.java. Using this switch causes the generated code to
   // internalize those annotations into the other generated classes.
-  @Parameter(property = "noPackageLevelAnnotations")
+  @Parameter(property="noPackageLevelAnnotations")
   private boolean noPackageLevelAnnotations = false;
 
   // Corresponding XJC parameter: p.
@@ -134,12 +134,12 @@ public final class XJCMojo extends GeneratorMojo {
   // XJC documentation: 'Specifying a target package via this command-line
   // option overrides any binding customization for package name and the
   // default package name algorithm defined in the specification'.
-  @Parameter(property = "packageName")
+  @Parameter(property="packageName")
   private String packageName;
 
   // Corresponding XJC parameter: quiet.
   // Suppress compiler output, such as progress information and warnings.
-  @Parameter(property = "quiet")
+  @Parameter(property="quiet")
   private boolean quiet = false;
 
   // Defines the content type of sources for the XJC. To simplify usage of the
@@ -149,7 +149,7 @@ public final class XJCMojo extends GeneratorMojo {
   // This parameter replaces the previous multiple-choice boolean configuration
   // options for the jaxb2-maven-plugin (i.e. dtd, xmlschema, wsdl), and
   // corresponds to setting one of those flags as an XJC argument.
-  @Parameter(property = "sourceType")
+  @Parameter(property="sourceType")
   private String sourceType = "xmlschema";
 
   // Corresponding XJC parameter: target.
@@ -157,7 +157,7 @@ public final class XJCMojo extends GeneratorMojo {
   // Permitted values: '2.0' and '2.1'. Avoid generating code that relies on
   // JAXB newer than the version given. This will allow the generated code to
   // run with JAXB 2.0 runtime (such as JavaSE 6.).
-  @Parameter(property = "target")
+  @Parameter(property="target")
   private String targetVersion;
 
   // Corresponding XJC parameter: verbose.
@@ -165,7 +165,7 @@ public final class XJCMojo extends GeneratorMojo {
   // Tells XJC to be extra verbose, such as printing informational messages or
   // displaying stack traces.
   // User property: xjc.verbose
-  @Parameter(property = "verbose")
+  @Parameter(property="verbose")
   private boolean verbose = false;
 
   // Parameter holding List of XSD paths to files and/or directories which
@@ -182,7 +182,7 @@ public final class XJCMojo extends GeneratorMojo {
   // <schema>a/directory/holding/xsds</schema>
   // </schemas>
   // </configuration>
-  @Parameter(property = "schemas", required = true)
+  @Parameter(property="schemas", required=true)
   private List<String> schemas;
 
   // Parameter holding List of XJB Files and/or directories which should be
@@ -200,17 +200,17 @@ public final class XJCMojo extends GeneratorMojo {
   //  <xjb>bindings/config/directory</xjb>
   //  </xjbs>
   //  </configuration>
-  @Parameter(property = "bindings")
+  @Parameter(property="bindings")
   private List<String> bindings;
 
   @Override
   @SuppressWarnings("unchecked")
-  @ResourceLabel(label = {"schemas", "bindings"}, nonEmpty = {true, false})
+  @ResourceLabel(label={"schemas", "bindings"}, nonEmpty={true, false})
   protected List<String>[] getResources() {
     return new List[] {schemas, bindings};
   }
 
-  @Parameter(defaultValue = "${localRepository}")
+  @Parameter(defaultValue="${localRepository}")
   private ArtifactRepository localRepository;
 
   @Override
