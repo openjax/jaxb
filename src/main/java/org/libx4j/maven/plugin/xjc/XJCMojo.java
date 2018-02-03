@@ -243,18 +243,7 @@ public final class XJCMojo extends GeneratorMojo {
       if (configuration.getResources(1) != null)
         command.setXJBs(Collections.asCollection(new LinkedHashSet<URL>(), configuration.getResources(1)));
 
-      final List<String> classpath = MojoUtil.getPluginDependencyClassPath((PluginDescriptor)this.getPluginContext().get("pluginDescriptor"), localRepository, artifactHandler);
-      classpath.addAll(project.getCompileClasspathElements());
-      classpath.addAll(project.getRuntimeClasspathElements());
-      if (isInTestPhase()) {
-        classpath.addAll(project.getTestClasspathElements());
-        classpath.addAll(MojoUtil.getProjectExecutionArtifactClassPath(project, localRepository, artifactHandler));
-      }
-
-      final File[] classpathFiles = new File[classpath.size()];
-      for (int i = 0; i < classpathFiles.length; i++)
-        classpathFiles[i] = new File(classpath.get(i));
-
+      final File[] classpathFiles = MojoUtil.getExecutionClasspash(execution, (PluginDescriptor)this.getPluginContext().get("pluginDescriptor"), project, localRepository, artifactHandler);
       XJCompiler.compile(command, classpathFiles);
 
       if (isInTestPhase())
