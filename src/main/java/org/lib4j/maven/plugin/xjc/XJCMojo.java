@@ -14,7 +14,7 @@
  * program. If not, see <http://opensource.org/licenses/MIT/>.
  */
 
-package org.libx4j.maven.plugin.xjc;
+package org.lib4j.maven.plugin.xjc;
 
 import java.io.File;
 import java.net.URL;
@@ -244,7 +244,8 @@ public final class XJCMojo extends GeneratorMojo {
         command.setXJBs(Collections.asCollection(new LinkedHashSet<URL>(), configuration.getResources(1)));
 
       final File[] classpathFiles = MojoUtil.getExecutionClasspash(execution, (PluginDescriptor)this.getPluginContext().get("pluginDescriptor"), project, localRepository, artifactHandler);
-      XJCompiler.compile(command, classpathFiles);
+      command.addClasspath(classpathFiles);
+      XJCompiler.compile(command);
 
       if (isInTestPhase())
         project.addTestCompileSourceRoot(configuration.getDestDir().getAbsolutePath());
