@@ -17,7 +17,10 @@
 package org.lib4j.maven.plugin.xjc;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.LinkedHashSet;
 import java.util.List;
 
@@ -39,6 +42,7 @@ import org.lib4j.maven.mojo.MojoUtil;
 import org.lib4j.maven.mojo.ResourceLabel;
 import org.lib4j.util.Collections;
 import org.lib4j.xml.jaxb.XJCompiler;
+import org.lib4j.xml.sax.XMLDocuments;
 
 /**
  * Mojo that creates compile-scope Java source or binaries from XML schema(s) by
@@ -216,10 +220,10 @@ public final class XJCMojo extends GeneratorMojo {
   @Override
   public void execute(final Configuration configuration) throws MojoExecutionException, MojoFailureException {
     final ArtifactHandler artifactHandler = new DefaultArtifactHandler("jar");
+    File masterCatalog = null;
     try {
       final XJCompiler.Command command = new XJCompiler.Command();
       command.setAddGeneratedAnnotation(addGeneratedAnnotation);
-      command.setCatalog(catalog);
       command.setEnableIntrospection(enableIntrospection);
       command.setExtension(extension);
       command.setLaxSchemaValidation(laxSchemaValidation);
@@ -229,17 +233,28 @@ public final class XJCMojo extends GeneratorMojo {
       if (targetVersion != null)
         command.setTargetVersion(XJCompiler.Command.TargetVersion.fromString(targetVersion));
 
-      command.setVerbose(verbose);
-
       if (sourceType != null)
         command.setSourceType(XJCompiler.Command.SourceType.fromString(sourceType));
 
+      command.setVerbose(verbose);
       command.setEncoding(encoding);
       command.setPackageName(packageName);
       command.setDestDir(configuration.getDestDir());
       command.setOverwrite(configuration.isOverwrite());
       command.setGenerateEpisode(generateEpisode);
-      command.setSchemas(Collections.asCollection(new LinkedHashSet<URL>(), configuration.getResources(0)));
+      final URL[] urls = configuration.getResources(0);
+      masterCatalog = Files.createTempFile("catalog", ".cat").toFile();
+      if (catalog != null)
+        Files.copy(catalog.toPath(), masterCatalog.toPath(), StandardCopyOption.REPLACE_EXISTING);
+
+      try (final FileOutputStream fos = new FileOutputStream(masterCatalog)) {
+        for (final URL url : urls) {
+          fos.write(XMLDocuments.parse(url, false, true).getCatalog().toTR9401().getBytes());
+        }
+      }
+      command.setCatalog(masterCatalog);
+
+      command.setSchemas(Collections.asCollection(new LinkedHashSet<URL>(), urls));
       if (configuration.getResources(1) != null)
         command.setXJBs(Collections.asCollection(new LinkedHashSet<URL>(), configuration.getResources(1)));
 
@@ -251,12 +266,14 @@ public final class XJCMojo extends GeneratorMojo {
         project.addTestCompileSourceRoot(configuration.getDestDir().getAbsolutePath());
       else
         project.addCompileSourceRoot(configuration.getDestDir().getAbsolutePath());
+
+      masterCatalog.deleteOnExit();
     }
-    catch (final JAXBException e) {
-      throw new MojoExecutionException(e.getMessage(), e);
-    }
-    catch (final Throwable t) {
-      throw new MojoFailureException(t.getMessage(), t);
+    catch (final Exception e) {
+      if (e instanceof JAXBException)
+        throw new MojoExecutionException(masterCatalog.getAbsolutePath(), e);
+
+      throw new MojoFailureException(masterCatalog.getAbsolutePath(), e);
     }
   }
 }
