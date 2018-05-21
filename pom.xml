@@ -112,8 +112,8 @@
   </profiles>
   <dependencies>
     <dependency>
-      <groupId>org.lib4j</groupId>
-      <artifactId>lib4j-xml</artifactId>
+      <groupId>org.lib4j.xml</groupId>
+      <artifactId>xml-jaxb</artifactId>
     </dependency>
   </dependencies>
 </project>
