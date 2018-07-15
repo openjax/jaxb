@@ -17,7 +17,8 @@
 package org.lib4j.maven.plugin.xjc;
 
 import java.io.File;
-import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.OutputStreamWriter;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
@@ -247,11 +248,11 @@ public final class XJCMojo extends GeneratorMojo {
       if (catalog != null)
         Files.copy(catalog.toPath(), masterCatalog.toPath(), StandardCopyOption.REPLACE_EXISTING);
 
-      try (final FileOutputStream fos = new FileOutputStream(masterCatalog)) {
-        for (final URL url : urls) {
-          fos.write(XMLDocuments.parse(url, false, true).getCatalog().toTR9401().getBytes());
-        }
+      try (final OutputStreamWriter out = new FileWriter(masterCatalog)) {
+        for (final URL url : urls)
+          out.write(XMLDocuments.parse(url, false, true).getCatalog().toTR9401());
       }
+
       command.setCatalog(masterCatalog);
 
       command.setSchemas(Collections.asCollection(new LinkedHashSet<URL>(), urls));
