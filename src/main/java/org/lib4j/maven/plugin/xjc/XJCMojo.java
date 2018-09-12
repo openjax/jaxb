@@ -41,7 +41,7 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.lib4j.maven.mojo.GeneratorMojo;
 import org.lib4j.maven.mojo.MojoUtil;
 import org.lib4j.maven.mojo.ResourceLabel;
-import org.lib4j.util.Collections;
+import org.fastjax.util.Collections;
 import org.lib4j.xml.jaxb.XJCompiler;
 import org.lib4j.xml.sax.XMLDocuments;
 
