@@ -42,8 +42,8 @@ import org.lib4j.maven.mojo.GeneratorMojo;
 import org.lib4j.maven.mojo.MojoUtil;
 import org.lib4j.maven.mojo.ResourceLabel;
 import org.fastjax.util.Collections;
-import org.lib4j.xml.jaxb.XJCompiler;
-import org.lib4j.xml.sax.XMLDocuments;
+import org.fastjax.xml.jaxb.XJCompiler;
+import org.fastjax.xml.sax.XMLDocuments;
 
 /**
  * Mojo that creates compile-scope Java source or binaries from XML schema(s) by

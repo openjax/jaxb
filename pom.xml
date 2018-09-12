@@ -112,8 +112,9 @@
   </profiles>
   <dependencies>
     <dependency>
-      <groupId>org.lib4j.xml</groupId>
+      <groupId>org.fastjax.xml</groupId>
       <artifactId>xml-jaxb</artifactId>
+      <version>1.0.4-SNAPSHOT</version>
     </dependency>
   </dependencies>
 </project>
