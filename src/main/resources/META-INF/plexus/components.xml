@@ -1,5 +1,5 @@
 <!--
-  Copyright (c) 2016 lib4j
+  Copyright (c) 2016 FastJAX
   
   Permission is hereby granted, free of charge, to any person obtaining a copy
   of this software and associated documentation files (the "Software"), to deal
@@ -23,7 +23,7 @@
       <configuration>
         <id>xjc</id>
         <default-phases>
-          <generate-sources>org.lib4j.maven.plugin:xjc-maven-plugin:xjc</generate-sources>
+          <generate-sources>org.fastjax.maven.plugin:xjc-maven-plugin:xjc</generate-sources>
         </default-phases>
       </configuration>
     </component>
@@ -37,7 +37,7 @@
           <phase>xjc</phase>
         </phases>
         <default-phases>
-          <xjc>org.lib4j.maven.plugin:xjc-maven-plugin:xjc</xjc>
+          <xjc>org.fastjax.maven.plugin:xjc-maven-plugin:xjc</xjc>
         </default-phases>
       </configuration>
     </component>
