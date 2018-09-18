@@ -14,7 +14,7 @@
  * program. If not, see <http://opensource.org/licenses/MIT/>.
  */
 
-package org.fastjax.maven.plugin.xjc;
+package org.fastjax.jaxb;
 
 import java.io.File;
 import java.io.FileWriter;
