@@ -1,11 +1,11 @@
 <img src="https://images.cooltext.com/5195723.png" align="right">
 
-## xjc-maven-plugin<br>![mvn-plugin][mvn-plugin] <a href="https://www.fastjax.org/"><img src="https://img.shields.io/badge/FastJAX--blue.svg"></a>
-> Maven Plugin for XJC
+## jaxb-maven-plugin<br>![mvn-plugin][mvn-plugin] <a href="https://www.fastjax.org/"><img src="https://img.shields.io/badge/FastJAX--blue.svg"></a>
+> Maven Plugin for JAX-B
 
 ### Introduction
 
-The `xjc-maven-plugin` plugin is used for XJC.
+The `jaxb-maven-plugin` plugin is used for JAX-B.
 
 ### Goals Overview
 
