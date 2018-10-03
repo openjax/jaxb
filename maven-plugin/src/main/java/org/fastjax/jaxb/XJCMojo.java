@@ -40,7 +40,7 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.fastjax.maven.mojo.GeneratorMojo;
 import org.fastjax.maven.mojo.MojoUtil;
-import org.fastjax.maven.mojo.ResourceLabel;
+import org.fastjax.maven.mojo.SourceInput;
 import org.fastjax.util.Collections;
 import org.fastjax.xml.jaxb.XJCompiler;
 import org.fastjax.xml.sax.XMLDocuments;
@@ -219,6 +219,7 @@ public final class XJCMojo extends GeneratorMojo {
    * </configuration>
    * }</pre></blockquote>
    */
+  @SourceInput
   @Parameter(property="schemas", required=true)
   private List<String> schemas;
 
@@ -241,15 +242,9 @@ public final class XJCMojo extends GeneratorMojo {
    * </configuration>
    * }</pre></blockquote>
    */
+  @SourceInput
   @Parameter(property="bindings")
   private List<String> bindings;
-
-  @Override
-  @SuppressWarnings("unchecked")
-  @ResourceLabel(label={"schemas", "bindings"}, nonEmpty={true, false})
-  protected List<String>[] getResources() {
-    return new List[] {schemas, bindings};
-  }
 
   @Parameter(defaultValue="${localRepository}")
   private ArtifactRepository localRepository;
@@ -279,21 +274,22 @@ public final class XJCMojo extends GeneratorMojo {
       command.setDestDir(configuration.getDestDir());
       command.setOverwrite(configuration.isOverwrite());
       command.setGenerateEpisode(generateEpisode);
-      final URL[] urls = configuration.getResources(0);
       masterCatalog = Files.createTempFile("catalog", ".cat").toFile();
       if (catalog != null)
         Files.copy(catalog.toPath(), masterCatalog.toPath(), StandardCopyOption.REPLACE_EXISTING);
 
+      final URL[] schemas = configuration.getSourceInputs("schemas");
       try (final OutputStreamWriter out = new FileWriter(masterCatalog)) {
-        for (final URL url : urls)
-          out.write(XMLDocuments.parse(url, false, true).getCatalog().toTR9401());
+        for (final URL schema : schemas)
+          out.write(XMLDocuments.parse(schema, false, true).getCatalog().toTR9401());
       }
 
       command.setCatalog(masterCatalog);
 
-      command.setSchemas(Collections.asCollection(new LinkedHashSet<URL>(), urls));
-      if (configuration.getResources(1) != null)
-        command.setXJBs(Collections.asCollection(new LinkedHashSet<URL>(), configuration.getResources(1)));
+      command.setSchemas(Collections.asCollection(new LinkedHashSet<URL>(), schemas));
+      final URL[] bindings = configuration.getSourceInputs("bindings");
+      if (bindings != null)
+        command.setXJBs(Collections.asCollection(new LinkedHashSet<URL>(), bindings));
 
       final File[] classpathFiles = MojoUtil.getExecutionClasspash(execution, (PluginDescriptor)this.getPluginContext().get("pluginDescriptor"), project, localRepository, artifactHandler);
       command.addClasspath(classpathFiles);
