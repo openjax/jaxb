@@ -18,6 +18,7 @@ package org.fastjax.xml.jaxb;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -27,7 +28,6 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Scanner;
 
 import javax.activation.DataSource;
 import javax.xml.bind.JAXBContext;
@@ -35,13 +35,14 @@ import javax.xml.bind.JAXBException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.LogFactory;
-import org.jvnet.annox.parser.XAnnotationParser;
-import org.jvnet.jaxb2_commons.plugin.AbstractParameterizablePlugin;
-import org.jvnet.jaxb2_commons.plugin.annotate.AnnotatePlugin;
+import org.fastjax.exec.Processes;
 import org.fastjax.io.Streams;
 import org.fastjax.net.URLs;
 import org.fastjax.util.ClassLoaders;
 import org.fastjax.util.Collections;
+import org.jvnet.annox.parser.XAnnotationParser;
+import org.jvnet.jaxb2_commons.plugin.AbstractParameterizablePlugin;
+import org.jvnet.jaxb2_commons.plugin.annotate.AnnotatePlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -162,7 +163,9 @@ public class XJCompiler {
     private LinkedHashSet<URL> schemas;
 
     public static enum SourceType {
-      DTD("dtd"), WSDL("wsdl"), XMLSCHEMA("xmlschema");
+      DTD("dtd"),
+      WSDL("wsdl"),
+      XMLSCHEMA("xmlschema");
 
       private final String type;
 
@@ -185,7 +188,8 @@ public class XJCompiler {
     private SourceType sourceType;
 
     public static enum TargetVersion {
-      _2_0("2.0"), _2_1("2.1");
+      _2_0("2.0"),
+      _2_1("2.1");
 
       private final String version;
 
@@ -245,7 +249,7 @@ public class XJCompiler {
       }
     }
 
-    public boolean isAddGeneratedAnnotation() {
+    public boolean getAddGeneratedAnnotation() {
       return this.addGeneratedAnnotation;
     }
 
@@ -261,7 +265,7 @@ public class XJCompiler {
       this.catalog = catalog;
     }
 
-    public boolean isOverwrite() {
+    public boolean getOverwrite() {
       return this.overwrite;
     }
 
@@ -269,7 +273,7 @@ public class XJCompiler {
       this.overwrite = overwrite;
     }
 
-    public boolean isEnableIntrospection() {
+    public boolean getEnableIntrospection() {
       return this.enableIntrospection;
     }
 
@@ -285,7 +289,7 @@ public class XJCompiler {
       this.encoding = encoding;
     }
 
-    public boolean isExtension() {
+    public boolean getExtension() {
       return this.extension;
     }
 
@@ -293,7 +297,7 @@ public class XJCompiler {
       this.extension = extension;
     }
 
-    public boolean isGenerateEpisode() {
+    public boolean getGenerateEpisode() {
       return this.generateEpisode;
     }
 
@@ -301,7 +305,7 @@ public class XJCompiler {
       this.generateEpisode = generateEpisode;
     }
 
-    public boolean isLaxSchemaValidation() {
+    public boolean getLaxSchemaValidation() {
       return this.laxSchemaValidation;
     }
 
@@ -309,7 +313,7 @@ public class XJCompiler {
       this.laxSchemaValidation = laxSchemaValidation;
     }
 
-    public boolean isNoGeneratedHeaderComments() {
+    public boolean getNoGeneratedHeaderComments() {
       return this.noGeneratedHeaderComments;
     }
 
@@ -317,7 +321,7 @@ public class XJCompiler {
       this.noGeneratedHeaderComments = noGeneratedHeaderComments;
     }
 
-    public boolean isNoPackageLevelAnnotations() {
+    public boolean getNoPackageLevelAnnotations() {
       return this.noPackageLevelAnnotations;
     }
 
@@ -341,7 +345,7 @@ public class XJCompiler {
       this.packageName = packageName;
     }
 
-    public boolean isQuiet() {
+    public boolean getQuiet() {
       return this.quiet;
     }
 
@@ -373,7 +377,7 @@ public class XJCompiler {
       this.targetVersion = targetVersion;
     }
 
-    public boolean isVerbose() {
+    public boolean getVerbose() {
       return this.verbose;
     }
 
@@ -405,7 +409,7 @@ public class XJCompiler {
 
   private static final Logger logger = LoggerFactory.getLogger(XJCompiler.class);
 
-  public static void compile(final Command command) throws JAXBException, MalformedURLException {
+  public static void compile(final Command command) throws JAXBException {
     if (command.getSchemas() == null || command.getSchemas().size() == 0)
       return;
 
@@ -422,31 +426,36 @@ public class XJCompiler {
 
     args.add(XJCFacade.class.getName());
     args.add("-Xannotate");
-    if (command.isAddGeneratedAnnotation())
+    if (command.getAddGeneratedAnnotation())
       args.add("-mark-generated");
 
     if (command.getCatalog() != null) {
-      args.add(1, "-Dxml.catalog.ignoreMissing");
-      args.add("-catalog");
-      args.add(command.getCatalog().toURI().toURL().toExternalForm());
+      try {
+        args.add(1, "-Dxml.catalog.ignoreMissing");
+        args.add("-catalog");
+        args.add(command.getCatalog().toURI().toURL().toString());
+      }
+      catch (final MalformedURLException e) {
+        throw new UnsupportedOperationException(e);
+      }
     }
 
-    if (command.isEnableIntrospection())
+    if (command.getEnableIntrospection())
       args.add("-enableIntrospection");
 
-    if (command.isExtension())
+    if (command.getExtension())
       args.add("-extension");
 
-    if (command.isLaxSchemaValidation())
+    if (command.getLaxSchemaValidation())
       args.add("-nv");
 
-    if (command.isNoGeneratedHeaderComments())
+    if (command.getNoGeneratedHeaderComments())
       args.add("-no-header");
 
-    if (command.isNoPackageLevelAnnotations())
+    if (command.getNoPackageLevelAnnotations())
       args.add("-npa");
 
-    if (command.isQuiet())
+    if (command.getQuiet())
       args.add("-quiet");
 
     if (command.getTargetVersion() != null) {
@@ -454,7 +463,7 @@ public class XJCompiler {
       args.add(command.getTargetVersion().version);
     }
 
-    if (command.isVerbose())
+    if (command.getVerbose())
       args.add("-verbose");
 
     if (command.getSourceType() != null)
@@ -523,7 +532,7 @@ public class XJCompiler {
         }
       }
 
-      if (command.isGenerateEpisode()) {
+      if (command.getGenerateEpisode()) {
         final File metaInfDir = new File(command.getDestDir(), "META-INF" + File.separator + "sun-jaxb.episode");
         if (!metaInfDir.getParentFile().mkdirs())
           throw new JAXBException("Unable to create output directory META-INF" + metaInfDir.getParentFile().getAbsolutePath());
@@ -532,34 +541,40 @@ public class XJCompiler {
         args.add(metaInfDir.getAbsolutePath());
       }
 
-      final Process process = new ProcessBuilder(args).inheritIO().redirectErrorStream(true).start();
-      try (final Scanner scanner = new Scanner(process.getInputStream())) {
-        while (scanner.hasNextLine())
-          log(scanner.nextLine().trim());
+      final FilterOutputStream out = new FilterOutputStream(System.out) {
+        final StringBuilder buffer = new StringBuilder();
 
-        final StringBuilder lastLine = new StringBuilder();
-        while (scanner.hasNextByte())
-          lastLine.append(scanner.nextByte());
+        @Override
+        public void write(final int b) throws IOException {
+          if (b == '\n')
+            flush();
+          else
+            buffer.append((char)b);
+        }
 
-        if (lastLine.length() > 0)
-          log(lastLine.toString());
-      }
+        @Override
+        public void flush() throws IOException {
+          super.flush();
+          if (buffer.length() == 0)
+            return;
 
-      final int exitCode = process.waitFor();
+          final String line = buffer.toString();
+          buffer.setLength(0);
+          if (line.startsWith("[ERROR] "))
+            logger.error(line.substring(8));
+          else if (line.startsWith("[WARNING] "))
+            logger.warn(line.substring(10));
+          else
+            logger.info(line);
+        }
+      };
+
+      final int exitCode = Processes.forkSync(null, out, null, true, null, null, args.toArray(new String[args.size()]));
       if (exitCode != 0)
         throw new JAXBException("xjc finished with code: " + exitCode + "\n" + Collections.toString(args, " "));
     }
     catch (final IOException | InterruptedException e) {
       throw new JAXBException(e.getMessage(), e);
     }
-  }
-
-  private static void log(final String line) {
-    if (line.startsWith("[ERROR] "))
-      logger.error(line.substring(8));
-    else if (line.startsWith("[WARNING] "))
-      logger.warn(line.substring(10));
-    else
-      logger.info(line);
   }
 }
