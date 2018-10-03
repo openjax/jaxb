@@ -249,9 +249,10 @@ public final class XJCMojo extends GeneratorMojo {
   @Parameter(defaultValue="${localRepository}")
   private ArtifactRepository localRepository;
 
+  private static final ArtifactHandler artifactHandler = new DefaultArtifactHandler("jar");
+
   @Override
   public void execute(final Configuration configuration) throws MojoExecutionException, MojoFailureException {
-    final ArtifactHandler artifactHandler = new DefaultArtifactHandler("jar");
     File masterCatalog = null;
     try {
       final XJCompiler.Command command = new XJCompiler.Command();
@@ -291,8 +292,7 @@ public final class XJCMojo extends GeneratorMojo {
       if (bindings != null)
         command.setXJBs(Collections.asCollection(new LinkedHashSet<URL>(), bindings));
 
-      final File[] classpathFiles = MojoUtil.getExecutionClasspash(execution, (PluginDescriptor)this.getPluginContext().get("pluginDescriptor"), project, localRepository, artifactHandler);
-      command.addClasspath(classpathFiles);
+      command.addClasspath(MojoUtil.getExecutionClasspash(execution, (PluginDescriptor)this.getPluginContext().get("pluginDescriptor"), project, localRepository, artifactHandler));
       XJCompiler.compile(command);
 
       if (isInTestPhase())
@@ -304,9 +304,9 @@ public final class XJCMojo extends GeneratorMojo {
     }
     catch (final Exception e) {
       if (e instanceof JAXBException)
-        throw new MojoExecutionException(masterCatalog.getAbsolutePath(), e);
+        throw new MojoExecutionException(masterCatalog == null ? null : masterCatalog.getAbsolutePath(), e);
 
-      throw new MojoFailureException(masterCatalog.getAbsolutePath(), e);
+      throw new MojoFailureException(masterCatalog == null ? null : masterCatalog.getAbsolutePath(), e);
     }
   }
 }
