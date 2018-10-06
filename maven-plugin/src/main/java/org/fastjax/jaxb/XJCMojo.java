@@ -273,7 +273,7 @@ public final class XJCMojo extends GeneratorMojo {
       command.setEncoding(encoding);
       command.setPackageName(packageName);
       command.setDestDir(configuration.getDestDir());
-      command.setOverwrite(configuration.isOverwrite());
+      command.setOverwrite(configuration.getOverwrite());
       command.setGenerateEpisode(generateEpisode);
       masterCatalog = Files.createTempFile("catalog", ".cat").toFile();
       if (catalog != null)
@@ -295,12 +295,7 @@ public final class XJCMojo extends GeneratorMojo {
       command.addClasspath(MojoUtil.getExecutionClasspash(execution, (PluginDescriptor)this.getPluginContext().get("pluginDescriptor"), project, localRepository, artifactHandler));
       XJCompiler.compile(command);
 
-      if (isInTestPhase())
-        project.addTestCompileSourceRoot(configuration.getDestDir().getAbsolutePath());
-      else
-        project.addCompileSourceRoot(configuration.getDestDir().getAbsolutePath());
-
-      masterCatalog.deleteOnExit();
+      masterCatalog.delete();
     }
     catch (final Exception e) {
       if (e instanceof JAXBException)
