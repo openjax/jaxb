@@ -41,7 +41,7 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.fastjax.maven.mojo.GeneratorMojo;
 import org.fastjax.maven.mojo.MojoUtil;
 import org.fastjax.maven.mojo.SourceInput;
-import org.fastjax.util.Collections;
+import org.fastjax.util.FastCollections;
 import org.fastjax.xml.jaxb.XJCompiler;
 import org.fastjax.xml.sax.XMLDocuments;
 
@@ -287,10 +287,10 @@ public final class XJCMojo extends GeneratorMojo {
 
       command.setCatalog(masterCatalog);
 
-      command.setSchemas(Collections.asCollection(new LinkedHashSet<URL>(), schemas));
+      command.setSchemas(FastCollections.asCollection(new LinkedHashSet<URL>(), schemas));
       final URL[] bindings = configuration.getSourceInputs("bindings");
       if (bindings != null)
-        command.setXJBs(Collections.asCollection(new LinkedHashSet<URL>(), bindings));
+        command.setXJBs(FastCollections.asCollection(new LinkedHashSet<URL>(), bindings));
 
       command.addClasspath(MojoUtil.getExecutionClasspash(execution, (PluginDescriptor)this.getPluginContext().get("pluginDescriptor"), project, localRepository, artifactHandler));
       XJCompiler.compile(command);

@@ -22,14 +22,14 @@ import java.util.LinkedHashSet;
 
 import javax.xml.bind.JAXBException;
 
-import org.fastjax.util.Collections;
+import org.fastjax.util.FastCollections;
 import org.junit.Test;
 
 public class XJCompilerTest {
   @Test
   public void test() throws JAXBException {
     final XJCompiler.Command command = new XJCompiler.Command();
-    command.setSchemas(Collections.asCollection(new LinkedHashSet<URL>(), getClass().getResource("/test.xsd")));
+    command.setSchemas(FastCollections.asCollection(new LinkedHashSet<URL>(), getClass().getResource("/test.xsd")));
     command.setDestDir(new File("target/generated-test-sources/jaxb"));
     command.setExtension(true);
     XJCompiler.compile(command);

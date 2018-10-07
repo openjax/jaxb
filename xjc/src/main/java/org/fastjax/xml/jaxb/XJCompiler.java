@@ -39,7 +39,7 @@ import org.fastjax.exec.Processes;
 import org.fastjax.io.Streams;
 import org.fastjax.net.URLs;
 import org.fastjax.util.ClassLoaders;
-import org.fastjax.util.Collections;
+import org.fastjax.util.FastCollections;
 import org.jvnet.annox.parser.XAnnotationParser;
 import org.jvnet.jaxb2_commons.plugin.AbstractParameterizablePlugin;
 import org.jvnet.jaxb2_commons.plugin.annotate.AnnotatePlugin;
@@ -571,7 +571,7 @@ public class XJCompiler {
 
       final int exitCode = Processes.forkSync(null, out, null, true, null, null, args.toArray(new String[args.size()]));
       if (exitCode != 0)
-        throw new JAXBException("xjc finished with code: " + exitCode + "\n" + Collections.toString(args, " "));
+        throw new JAXBException("xjc finished with code: " + exitCode + "\n" + FastCollections.toString(args, " "));
     }
     catch (final IOException | InterruptedException e) {
       throw new JAXBException(e.getMessage(), e);
