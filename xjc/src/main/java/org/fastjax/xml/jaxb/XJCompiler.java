@@ -241,8 +241,8 @@ public class XJCompiler {
         for (final Class<?> cls : new Class<?>[] {MaskingClassLoader.class, JAXBContext.class, AnnotatePlugin.class, AbstractParameterizablePlugin.class, LogFactory.class, XAnnotationParser.class, Node.class, DataSource.class, StringUtils.class})
           classpath.add(new File(cls.getProtectionDomain().getCodeSource().getLocation().toURI()));
 
-        for (final URL path : ClassLoaders.getClassPath())
-          classpath.add(new File(path.toURI()));
+        for (final File path : ClassLoaders.getClassPath())
+          classpath.add(path);
       }
       catch (final URISyntaxException e) {
         throw new UnsupportedOperationException(e);

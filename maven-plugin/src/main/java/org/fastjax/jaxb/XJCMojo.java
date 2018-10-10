@@ -297,10 +297,10 @@ public final class XJCMojo extends GeneratorMojo {
 
       masterCatalog.delete();
     }
+    catch (final JAXBException e) {
+      throw new MojoExecutionException(masterCatalog == null ? null : masterCatalog.getAbsolutePath(), e);
+    }
     catch (final Exception e) {
-      if (e instanceof JAXBException)
-        throw new MojoExecutionException(masterCatalog == null ? null : masterCatalog.getAbsolutePath(), e);
-
       throw new MojoFailureException(masterCatalog == null ? null : masterCatalog.getAbsolutePath(), e);
     }
   }
