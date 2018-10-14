@@ -25,7 +25,9 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
+import javax.xml.bind.UnmarshalException;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.ValidationEventHandler;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSchema;
 import javax.xml.bind.annotation.XmlType;
@@ -39,9 +41,37 @@ import org.fastjax.xml.sax.Validator;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 
+/**
+ * Utility functions for operations pertaining to JAXB.
+ */
 public final class JaxbUtil {
   private static final String DEFAULT = "##default";
 
+  /**
+   * Returns a string representation of the specified {@code binding}.
+   *
+   * @param binding The JAXB binding.
+   * @return A string representation of the specified {@code binding}.
+   * @throws JAXBException If an error was encountered while creating the
+   *           {@link JAXBContext}, such as (but not limited to):
+   *           <ol>
+   *           <li>No JAXB implementation was discovered
+   *           <li>Classes use JAXB annotations incorrectly
+   *           <li>Classes have colliding annotations (i.e., two classes with
+   *           the same type name)
+   *           <li>The JAXB implementation was unable to locate
+   *           provider-specific out-of-band information (such as additional
+   *           files generated at the development time.)
+   *           <li>{@code classesToBeBound} are not open to
+   *           {@code java.xml.bind} module
+   *           </ol>
+   *           Or if an error was encountered while creating the
+   *           {@link Marshaller} object.
+   *           <p>
+   *           Or if the {@link ValidationEventHandler} returns false from its
+   *           handleEvent method or the {@link Marshaller} is unable to marshal
+   *           the binding.
+   */
   @SuppressWarnings("unchecked")
   public static <T>String toXMLString(final T binding) throws JAXBException {
     final StringWriter stringWriter = new StringWriter();
@@ -74,40 +104,140 @@ public final class JaxbUtil {
     return stringWriter.toString();
   }
 
-  public static <T>T parse(final Class<T> cls, final URL url) throws IOException, SAXException {
+  /**
+   * Parses an XML document at the specified {@code url} as an instance of a
+   * JAXB binding class {@code cls}.
+   *
+   * @param cls The JAXB binding class.
+   * @param url The location of the XML document to parse.
+   * @return An XML document at the specified {@code url} as an instance of a
+   *         JAXB binding class {@code cls}.
+   * @throws IOException If an I/O error has occurred.
+   * @throws UnmarshalException If {@code validate} is set to true, and
+   *           validation of the XML document at {@code url} fails; or if this
+   *           method is unable to perform the XML to Java binding.
+   */
+  public static <T>T parse(final Class<T> cls, final URL url) throws IOException, UnmarshalException {
     return parse(cls, Thread.currentThread().getContextClassLoader(), url, new LoggingErrorHandler(), true);
   }
 
-  public static <T>T parse(final Class<T> cls, final ClassLoader classLoader, final URL url) throws IOException, SAXException {
+  /**
+   * Parses an XML document at the specified {@code url} as an instance of a
+   * JAXB binding class {@code cls}.
+   *
+   * @param cls The JAXB binding class.
+   * @param classLoader Class loader used to locate the implementation classes.
+   * @param url The location of the XML document to parse.
+   * @return An XML document at the specified {@code url} as an instance of a
+   *         JAXB binding class {@code cls}.
+   * @throws IOException If an I/O error has occurred.
+   * @throws UnmarshalException If {@code validate} is set to true, and
+   *           validation of the XML document at {@code url} fails; or if this
+   *           method is unable to perform the XML to Java binding.
+   */
+  public static <T>T parse(final Class<T> cls, final ClassLoader classLoader, final URL url) throws IOException, UnmarshalException {
     return parse(cls, classLoader, url, new LoggingErrorHandler(), true);
   }
 
-  public static <T>T parse(final Class<T> cls, final URL url, final boolean validate) throws IOException, SAXException {
+  /**
+   * Parses an XML document at the specified {@code url} as an instance of a
+   * JAXB binding class {@code cls}.
+   *
+   * @param cls The JAXB binding class.
+   * @param url The location of the XML document to parse.
+   * @param validate If {@code true}, the XML document at {@code url} will first
+   *          be validated.
+   * @return An XML document at the specified {@code url} as an instance of a
+   *         JAXB binding class {@code cls}.
+   * @throws IOException If an I/O error has occurred.
+   * @throws UnmarshalException If {@code validate} is set to true, and
+   *           validation of the XML document at {@code url} fails; or if this
+   *           method is unable to perform the XML to Java binding.
+   */
+  public static <T>T parse(final Class<T> cls, final URL url, final boolean validate) throws IOException, UnmarshalException {
     return parse(cls, Thread.currentThread().getContextClassLoader(), url, new LoggingErrorHandler(), validate);
   }
 
-  public static <T>T parse(final Class<T> cls, final ClassLoader classLoader, final URL url, final boolean validate) throws IOException, SAXException {
+  /**
+   * Parses an XML document at the specified {@code url} as an instance of a
+   * JAXB binding class {@code cls}.
+   *
+   * @param cls The JAXB binding class.
+   * @param classLoader Class loader used to locate the implementation classes.
+   * @param url The location of the XML document to parse.
+   * @param validate If {@code true}, the XML document at {@code url} will first
+   *          be validated.
+   * @return An XML document at the specified {@code url} as an instance of a
+   *         JAXB binding class {@code cls}.
+   * @throws IOException If an I/O error has occurred.
+   * @throws UnmarshalException If {@code validate} is set to true, and
+   *           validation of the XML document at {@code url} fails; or if this
+   *           method is unable to perform the XML to Java binding.
+   */
+  public static <T>T parse(final Class<T> cls, final ClassLoader classLoader, final URL url, final boolean validate) throws IOException, UnmarshalException {
     return parse(cls, classLoader, url, new LoggingErrorHandler(), validate);
   }
 
-  public static <T>T parse(final Class<T> cls, final URL url, final ErrorHandler errorHandler, final boolean validate) throws IOException, SAXException {
+  /**
+   * Parses an XML document at the specified {@code url} as an instance of a
+   * JAXB binding class {@code cls}.
+   *
+   * @param cls The JAXB binding class.
+   * @param url The location of the XML document to parse.
+   * @param errorHandler The {@link ErrorHandler} for SAX validation.
+   * @param validate If {@code true}, the XML document at {@code url} will first
+   *          be validated.
+   * @return An XML document at the specified {@code url} as an instance of a
+   *         JAXB binding class {@code cls}.
+   * @throws IOException If an I/O error has occurred.
+   * @throws UnmarshalException If {@code validate} is set to true, and
+   *           validation of the XML document at {@code url} fails; or if this
+   *           method is unable to perform the XML to Java binding.
+   */
+  public static <T>T parse(final Class<T> cls, final URL url, final ErrorHandler errorHandler, final boolean validate) throws IOException, UnmarshalException {
     return parse(cls, Thread.currentThread().getContextClassLoader(), url, errorHandler, validate);
   }
 
-  public static <T>T parse(final Class<T> cls, final ClassLoader classLoader, final URL url, final ErrorHandler errorHandler, final boolean validate) throws IOException, SAXException {
-    if (validate)
-      Validator.validate(url, false, errorHandler);
+  /**
+   * Parses an XML document at the specified {@code url} as an instance of a
+   * JAXB binding class {@code cls}.
+   *
+   * @param cls The JAXB binding class.
+   * @param classLoader Class loader used to locate the implementation classes.
+   * @param url The location of the XML document to parse.
+   * @param errorHandler The {@link ErrorHandler} for SAX validation.
+   * @param validate If {@code true}, the XML document at {@code url} will first
+   *          be validated.
+   * @return An XML document at the specified {@code url} as an instance of a
+   *         JAXB binding class {@code cls}.
+   * @throws IOException If an I/O error has occurred.
+   * @throws UnmarshalException If {@code validate} is set to true, and
+   *           validation of the XML document at {@code url} fails; or if this
+   *           method is unable to perform the XML to Java binding.
+   */
+  public static <T>T parse(final Class<T> cls, final ClassLoader classLoader, final URL url, final ErrorHandler errorHandler, final boolean validate) throws IOException, UnmarshalException {
+    if (validate) {
+      try {
+        Validator.validate(url, false, errorHandler);
+      }
+      catch (final SAXException e) {
+        throw new UnmarshalException(e);
+      }
+    }
 
     try (final InputStream in = url.openStream()) {
       final Unmarshaller unmarshaller = JAXBContext.newInstance(cls.getPackageName(), classLoader).createUnmarshaller();
       final JAXBElement<T> element = unmarshaller.unmarshal(XMLInputFactory.newInstance().createXMLStreamReader(in), cls);
       return element.getValue();
     }
+    catch (final UnmarshalException e) {
+      throw e;
+    }
     catch (final FactoryConfigurationError | JAXBException e) {
-      throw new UnsupportedOperationException(e);
+      throw new IllegalStateException(e);
     }
     catch (final XMLStreamException e) {
-      throw new SAXException(e);
+      throw new IOException(e);
     }
   }
 
