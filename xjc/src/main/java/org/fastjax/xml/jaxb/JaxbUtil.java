@@ -50,6 +50,7 @@ public final class JaxbUtil {
   /**
    * Returns a string representation of the specified {@code binding}.
    *
+   * @param <T> The type of specified {@code binding}.
    * @param binding The JAXB binding.
    * @return A string representation of the specified {@code binding}.
    * @throws JAXBException If an error was encountered while creating the
@@ -108,6 +109,7 @@ public final class JaxbUtil {
    * Parses an XML document at the specified {@code url} as an instance of a
    * JAXB binding class {@code cls}.
    *
+   * @param <T> The generic type of specified binding class {@code cls}.
    * @param cls The JAXB binding class.
    * @param url The location of the XML document to parse.
    * @return An XML document at the specified {@code url} as an instance of a
@@ -125,6 +127,7 @@ public final class JaxbUtil {
    * Parses an XML document at the specified {@code url} as an instance of a
    * JAXB binding class {@code cls}.
    *
+   * @param <T> The generic type of specified binding class {@code cls}.
    * @param cls The JAXB binding class.
    * @param classLoader Class loader used to locate the implementation classes.
    * @param url The location of the XML document to parse.
@@ -143,6 +146,7 @@ public final class JaxbUtil {
    * Parses an XML document at the specified {@code url} as an instance of a
    * JAXB binding class {@code cls}.
    *
+   * @param <T> The generic type of specified binding class {@code cls}.
    * @param cls The JAXB binding class.
    * @param url The location of the XML document to parse.
    * @param validate If {@code true}, the XML document at {@code url} will first
@@ -162,6 +166,7 @@ public final class JaxbUtil {
    * Parses an XML document at the specified {@code url} as an instance of a
    * JAXB binding class {@code cls}.
    *
+   * @param <T> The generic type of specified binding class {@code cls}.
    * @param cls The JAXB binding class.
    * @param classLoader Class loader used to locate the implementation classes.
    * @param url The location of the XML document to parse.
@@ -182,6 +187,7 @@ public final class JaxbUtil {
    * Parses an XML document at the specified {@code url} as an instance of a
    * JAXB binding class {@code cls}.
    *
+   * @param <T> The generic type of specified binding class {@code cls}.
    * @param cls The JAXB binding class.
    * @param url The location of the XML document to parse.
    * @param errorHandler The {@link ErrorHandler} for SAX validation.
@@ -202,6 +208,7 @@ public final class JaxbUtil {
    * Parses an XML document at the specified {@code url} as an instance of a
    * JAXB binding class {@code cls}.
    *
+   * @param <T> The generic type of specified binding class {@code cls}.
    * @param cls The JAXB binding class.
    * @param classLoader Class loader used to locate the implementation classes.
    * @param url The location of the XML document to parse.
