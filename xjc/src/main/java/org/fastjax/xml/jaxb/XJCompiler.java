@@ -496,7 +496,7 @@ public class XJCompiler {
       }
 
       for (final URL schema : command.getSchemas()) {
-        if (URLs.isFile(schema)) {
+        if (URLs.isLocalFile(schema)) {
           final File file = new File(schema.getFile());
           if (!file.exists())
             throw new FileNotFoundException(file.getAbsolutePath());
@@ -518,7 +518,7 @@ public class XJCompiler {
       if (command.getXJBs() != null) {
         for (final URL xjb : command.getXJBs()) {
           args.add("-b");
-          if (URLs.isFile(xjb)) {
+          if (URLs.isLocalFile(xjb)) {
             args.add(xjb.getFile());
           }
           else {

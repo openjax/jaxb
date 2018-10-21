@@ -292,7 +292,7 @@ public final class XJCMojo extends GeneratorMojo {
       if (bindings != null)
         command.setXJBs(FastCollections.asCollection(new LinkedHashSet<URL>(), bindings));
 
-      command.addClasspath(MojoUtil.getExecutionClasspash(execution, (PluginDescriptor)this.getPluginContext().get("pluginDescriptor"), project, localRepository, artifactHandler));
+      command.addClasspath(MojoUtil.getExecutionClasspash(project, execution, (PluginDescriptor)this.getPluginContext().get("pluginDescriptor"), localRepository, artifactHandler));
       XJCompiler.compile(command);
 
       masterCatalog.delete();
