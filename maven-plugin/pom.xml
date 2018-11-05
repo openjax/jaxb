@@ -94,7 +94,7 @@
           <plugin>
             <groupId>org.fastjax.jaxb</groupId>
             <artifactId>jaxb-maven-plugin</artifactId>
-            <version>0.8.1-SNAPSHOT</version>
+            <version>${project.version}</version>
             <executions>
               <execution>
                 <goals>
