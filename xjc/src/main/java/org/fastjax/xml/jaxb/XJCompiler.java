@@ -239,7 +239,8 @@ public class XJCompiler {
       classpath = new LinkedHashSet<>();
       try {
         for (final Class<?> cls : new Class<?>[] {MaskingClassLoader.class, JAXBContext.class, AnnotatePlugin.class, AbstractParameterizablePlugin.class, LogFactory.class, XAnnotationParser.class, Node.class, DataSource.class, StringUtils.class})
-          classpath.add(new File(cls.getProtectionDomain().getCodeSource().getLocation().toURI()));
+          if (cls.getProtectionDomain().getCodeSource() != null)
+            classpath.add(new File(cls.getProtectionDomain().getCodeSource().getLocation().toURI()));
 
         for (final File path : ClassLoaders.getClassPath())
           classpath.add(path);
@@ -426,6 +427,7 @@ public class XJCompiler {
 
     args.add(XJCFacade.class.getName());
     args.add("-Xannotate");
+
     if (command.getAddGeneratedAnnotation())
       args.add("-mark-generated");
 

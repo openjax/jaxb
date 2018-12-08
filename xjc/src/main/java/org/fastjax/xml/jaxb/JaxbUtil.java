@@ -233,7 +233,7 @@ public final class JaxbUtil {
     }
 
     try (final InputStream in = url.openStream()) {
-      final Unmarshaller unmarshaller = JAXBContext.newInstance(cls.getPackageName(), classLoader).createUnmarshaller();
+      final Unmarshaller unmarshaller = JAXBContext.newInstance(cls.getPackage().getName(), classLoader).createUnmarshaller();
       final JAXBElement<T> element = unmarshaller.unmarshal(XMLInputFactory.newInstance().createXMLStreamReader(in), cls);
       return element.getValue();
     }
