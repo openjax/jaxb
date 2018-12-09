@@ -16,6 +16,9 @@
 
 package org.fastjax.xml.jaxb;
 
+import javax.activation.DataSource;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FilterOutputStream;
@@ -26,13 +29,13 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 
-import javax.activation.DataSource;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-
+import com.sun.istack.tools.MaskingClassLoader;
+import com.sun.tools.xjc.XJCFacade;
+import japa.parser.ast.Node;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.LogFactory;
 import org.fastjax.exec.Processes;
@@ -45,11 +48,6 @@ import org.jvnet.jaxb2_commons.plugin.AbstractParameterizablePlugin;
 import org.jvnet.jaxb2_commons.plugin.annotate.AnnotatePlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.sun.istack.tools.MaskingClassLoader;
-import com.sun.tools.xjc.XJCFacade;
-
-import japa.parser.ast.Node;
 
 public class XJCompiler {
   public static class Command {
@@ -162,14 +160,14 @@ public class XJCompiler {
     // </configuration>
     private LinkedHashSet<URL> schemas;
 
-    public static enum SourceType {
+    public enum SourceType {
       DTD("dtd"),
       WSDL("wsdl"),
       XMLSCHEMA("xmlschema");
 
       private final String type;
 
-      private SourceType(final String type) {
+      SourceType(final String type) {
         this.type = type;
       }
 
@@ -187,13 +185,13 @@ public class XJCompiler {
     // corresponds to setting one of those flags as an XJC argument.
     private SourceType sourceType;
 
-    public static enum TargetVersion {
+    public enum TargetVersion {
       _2_0("2.0"),
       _2_1("2.1");
 
       private final String version;
 
-      private TargetVersion(final String type) {
+      TargetVersion(final String type) {
         this.version = type;
       }
 
@@ -242,8 +240,7 @@ public class XJCompiler {
           if (cls.getProtectionDomain().getCodeSource() != null)
             classpath.add(new File(cls.getProtectionDomain().getCodeSource().getLocation().toURI()));
 
-        for (final File path : ClassLoaders.getClassPath())
-          classpath.add(path);
+        Collections.addAll(classpath, ClassLoaders.getClassPath());
       }
       catch (final URISyntaxException e) {
         throw new UnsupportedOperationException(e);
@@ -403,8 +400,7 @@ public class XJCompiler {
     }
 
     public void addClasspath(final File ... paths) {
-      for (final File path : paths)
-        this.classpath.add(path);
+      Collections.addAll(classpath, paths);
     }
   }
 

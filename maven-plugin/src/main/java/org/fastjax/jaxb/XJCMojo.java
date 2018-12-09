@@ -16,6 +16,7 @@
 
 package org.fastjax.jaxb;
 
+import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.OutputStreamWriter;
@@ -24,8 +25,6 @@ import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.LinkedHashSet;
 import java.util.List;
-
-import javax.xml.bind.JAXBException;
 
 import org.apache.maven.artifact.handler.ArtifactHandler;
 import org.apache.maven.artifact.handler.DefaultArtifactHandler;
@@ -57,7 +56,7 @@ public final class XJCMojo extends GeneratorMojo {
    * This feature causes all of the generated code to have @Generated annotation.
    */
   @Parameter(property="addGeneratedAnnotation")
-  private boolean addGeneratedAnnotation=false;
+  private boolean addGeneratedAnnotation = false;
 
   /**
    * Corresponding XJC parameter: catalog.
