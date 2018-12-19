@@ -14,7 +14,7 @@
  * program. If not, see <http://opensource.org/licenses/MIT/>.
  */
 
-package org.fastjax.xml.jaxb;
+package org.fastjax.jaxb;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -74,7 +74,7 @@ public final class JaxbUtil {
    *           the binding.
    */
   @SuppressWarnings("unchecked")
-  public static <T>String toXMLString(final T binding) throws JAXBException {
+  public static <T>String toXmlString(final T binding) throws JAXBException {
     final StringWriter stringWriter = new StringWriter();
     final JAXBContext jaxbContext = JAXBContext.newInstance(binding.getClass());
     final Marshaller marshaller = jaxbContext.createMarshaller();
@@ -240,11 +240,8 @@ public final class JaxbUtil {
     catch (final UnmarshalException e) {
       throw e;
     }
-    catch (final FactoryConfigurationError | JAXBException e) {
+    catch (final FactoryConfigurationError | JAXBException | XMLStreamException e) {
       throw new IllegalStateException(e);
-    }
-    catch (final XMLStreamException e) {
-      throw new IOException(e);
     }
   }
 

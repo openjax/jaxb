@@ -16,7 +16,6 @@
 
 package org.fastjax.jaxb;
 
-import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.OutputStreamWriter;
@@ -25,6 +24,8 @@ import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.LinkedHashSet;
 import java.util.List;
+
+import javax.xml.bind.JAXBException;
 
 import org.apache.maven.artifact.handler.ArtifactHandler;
 import org.apache.maven.artifact.handler.DefaultArtifactHandler;
@@ -41,7 +42,6 @@ import org.fastjax.maven.mojo.GeneratorMojo;
 import org.fastjax.maven.mojo.MojoUtil;
 import org.fastjax.maven.mojo.SourceInput;
 import org.fastjax.util.FastCollections;
-import org.fastjax.xml.jaxb.XJCompiler;
 import org.fastjax.xml.sax.XMLDocuments;
 
 /**

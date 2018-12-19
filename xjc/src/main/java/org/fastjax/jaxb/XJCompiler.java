@@ -14,11 +14,8 @@
  * program. If not, see <http://opensource.org/licenses/MIT/>.
  */
 
-package org.fastjax.xml.jaxb;
+package org.fastjax.jaxb;
 
-import javax.activation.DataSource;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FilterOutputStream;
@@ -33,9 +30,10 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 
-import com.sun.istack.tools.MaskingClassLoader;
-import com.sun.tools.xjc.XJCFacade;
-import japa.parser.ast.Node;
+import javax.activation.DataSource;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.LogFactory;
 import org.fastjax.exec.Processes;
@@ -48,6 +46,11 @@ import org.jvnet.jaxb2_commons.plugin.AbstractParameterizablePlugin;
 import org.jvnet.jaxb2_commons.plugin.annotate.AnnotatePlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.sun.istack.tools.MaskingClassLoader;
+import com.sun.tools.xjc.XJCFacade;
+
+import japa.parser.ast.Node;
 
 public class XJCompiler {
   public static class Command {
@@ -486,7 +489,7 @@ public class XJCompiler {
           throw new JAXBException("Unable to create output directory " + command.getDestDir().getAbsolutePath());
         }
         // FIXME: This does not work because the files that are written are only known by xjc, so I cannot
-        // FIXME: stop this generator from overwriting them if owerwrite=false
+        // FIXME: stop this generator from overwriting them if overwrite=false
 //        else if (command.isOverwrite()) {
 //          for (final File file : command.getDestDir().listFiles())
 //            Files.walk(file.toPath()).map(Path::toFile).filter(a -> a.getName().endsWith(".java")).sorted((o1, o2) -> o2.compareTo(o1)).forEach(File::delete);
@@ -533,7 +536,7 @@ public class XJCompiler {
       if (command.getGenerateEpisode()) {
         final File metaInfDir = new File(command.getDestDir(), "META-INF" + File.separator + "sun-jaxb.episode");
         if (!metaInfDir.getParentFile().mkdirs())
-          throw new JAXBException("Unable to create output directory META-INF" + metaInfDir.getParentFile().getAbsolutePath());
+          throw new JAXBException("Unable to create output directory: " + metaInfDir.getParentFile().getAbsolutePath());
 
         args.add("-episode");
         args.add(metaInfDir.getAbsolutePath());

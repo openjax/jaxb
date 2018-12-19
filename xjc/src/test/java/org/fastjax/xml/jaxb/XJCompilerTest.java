@@ -22,6 +22,7 @@ import java.util.LinkedHashSet;
 
 import javax.xml.bind.JAXBException;
 
+import org.fastjax.jaxb.XJCompiler;
 import org.fastjax.util.FastCollections;
 import org.junit.Test;
 
