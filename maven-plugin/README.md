@@ -11,6 +11,10 @@ The `jaxb-maven-plugin` plugin is used for JAX-B.
 
 * [`xjc:xjc`](#xjcxjc) XJC.
 
+### JavaDocs
+
+JavaDocs are available [here](https://jaxb.fastjax.org/javadocs/).
+
 ### License
 
 This project is licensed under the MIT License - see the [LICENSE.txt](LICENSE.txt) file for details.
