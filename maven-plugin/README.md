@@ -1,7 +1,6 @@
-<img src="https://images.cooltext.com/5195723.png" align="right">
+# FastJAX JAXB Maven Plugin
 
-## jaxb-maven-plugin<br>![mvn-plugin][mvn-plugin] <a href="https://www.fastjax.org/"><img src="https://img.shields.io/badge/FastJAX--blue.svg"></a>
-> Maven Plugin for JAX-B
+**Maven Plugin for JAX-B**
 
 ### Introduction
 
