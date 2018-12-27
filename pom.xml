@@ -29,6 +29,7 @@
   <version>0.8.1-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>${project.groupId}:${project.artifactId}</name>
+  <url>https://jaxb.fastjax.org/</url>
   <modules>
     <module>xjc</module>
     <module>maven-plugin</module>
