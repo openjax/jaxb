@@ -25,7 +25,9 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
+import java.security.Permission;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -54,6 +56,38 @@ import japa.parser.ast.Node;
 
 public class XJCompiler {
   public static class Command {
+    private boolean debug = false;
+
+    /** Generated files will be in read-only mode. */
+    private boolean readOnly = false;
+
+    /** Suppress generation of a file header with timestamp. */
+    private boolean noHeader = false;
+
+    /** Generates code that works around issues specific to 1.4 runtime. */
+    private boolean explicitAnnotation = false;
+
+    /** If {@code true} XML security features when parsing XML documents will be disabled. The default value is {@code false}. */
+    private boolean disableXmlSecurity = false;
+
+    /** When on, generates content property for types with multiple xs:any derived elements (which is supposed to be correct behavior). */
+    private boolean contentForWildcard = false;
+
+    /** If true, try to resolve name conflicts automatically by assigning mechanical numbers. */
+    private boolean autoNameResolution = false;
+
+    /** This allocator has the final say on deciding the class name. */
+    private boolean testClassNameAllocator = false;
+
+    /** Java module name in {@code module-info.java}. */
+    private String javaModule;
+
+    /** File defining proxyHost:proxyPort */
+    private File httpProxyFile;
+
+    /** String defining proxyHost:proxyPort */
+    private String httpProxy;
+
     // Corresponding XJC parameter: mark-generated.
     // This feature causes all of the generated code to have @Generated annotation.
     private boolean addGeneratedAnnotation = false;
@@ -250,6 +284,94 @@ public class XJCompiler {
       }
     }
 
+    public boolean getDebug() {
+      return this.debug;
+    }
+
+    public void setDebug(final boolean debug) {
+      this.debug = debug;
+    }
+
+    public boolean getReadOnly() {
+      return this.readOnly;
+    }
+
+    public void setReadOnly(final boolean readOnly) {
+      this.readOnly = readOnly;
+    }
+
+    public boolean getNoHeader() {
+      return this.noHeader;
+    }
+
+    public void setNoHeader(final boolean noHeader) {
+      this.noHeader = noHeader;
+    }
+
+    public boolean getExplicitAnnotation() {
+      return explicitAnnotation;
+    }
+
+    public void setExplicitAnnotation(final boolean explicitAnnotation) {
+      this.explicitAnnotation = explicitAnnotation;
+    }
+
+    public boolean getDisableXmlSecurity() {
+      return disableXmlSecurity;
+    }
+
+    public void setDisableXmlSecurity(final boolean disableXmlSecurity) {
+      this.disableXmlSecurity = disableXmlSecurity;
+    }
+
+    public boolean getContentForWildcard() {
+      return contentForWildcard;
+    }
+
+    public void setContentForWildcard(final boolean contentForWildcard) {
+      this.contentForWildcard = contentForWildcard;
+    }
+
+    public boolean getAutoNameResolution() {
+      return autoNameResolution;
+    }
+
+    public void setAutoNameResolution(final boolean autoNameResolution) {
+      this.autoNameResolution = autoNameResolution;
+    }
+
+    public boolean getTestClassNameAllocator() {
+      return testClassNameAllocator;
+    }
+
+    public void setTestClassNameAllocator(final boolean testClassNameAllocator) {
+      this.testClassNameAllocator = testClassNameAllocator;
+    }
+
+    public String getJavaModule() {
+      return this.javaModule;
+    }
+
+    public void setJavaModule(final String javaModule) {
+      this.javaModule = javaModule;
+    }
+
+    public File getHttpProxyFile() {
+      return this.httpProxyFile;
+    }
+
+    public void setHttpProxyFile(final File httpProxyFile) {
+      this.httpProxyFile = httpProxyFile;
+    }
+
+    public String getHttpProxy() {
+      return this.httpProxy;
+    }
+
+    public void setHttpProxy(final String httpProxy) {
+      this.httpProxy = httpProxy;
+    }
+
     public boolean getAddGeneratedAnnotation() {
       return this.addGeneratedAnnotation;
     }
@@ -408,31 +530,70 @@ public class XJCompiler {
   }
 
   private static final Logger logger = LoggerFactory.getLogger(XJCompiler.class);
+  // FIXME: Embedded mode breaks in openjax/rdb/sqlx when calling:
+  // FIXME: mvn org.fastjax.jaxb:jaxb-maven-plugin:0.8.1-SNAPSHOT:xjc@jaxb-test-generate
+  private static boolean embedded = false;
 
-  public static void compile(final Command command) throws JAXBException {
+  public static void compile(final Command command) throws IOException, JAXBException {
     if (command.getSchemas() == null || command.getSchemas().size() == 0)
       return;
 
     final List<String> args = new ArrayList<>();
-    args.add("java");
     if (command.classpath.size() > 0) {
       args.add("-cp");
       final StringBuilder cp = new StringBuilder();
-      for (final File classpathFile : command.classpath)
-        cp.append(File.pathSeparator).append(classpathFile.getAbsolutePath());
+      for (final File path : command.classpath)
+        cp.append(File.pathSeparator).append(path.getAbsolutePath());
 
       args.add(cp.substring(1));
     }
 
-    args.add(XJCFacade.class.getName());
+    if (!embedded)
+      args.add(XJCFacade.class.getName());
+
     args.add("-Xannotate");
+
+    if (command.getDebug())
+      args.add("-debug");
+
+    if (command.getReadOnly())
+      args.add("-readOnly");
+
+    if (command.getNoHeader())
+      args.add("-no-header");
+
+    if (command.getExplicitAnnotation())
+      args.add("-XexplicitAnnotation");
+
+    if (command.getDisableXmlSecurity())
+      args.add("-disableXmlSecurity");
+
+    if (command.getContentForWildcard())
+      args.add("-contentForWildcard");
+
+    if (command.getAutoNameResolution())
+      args.add("-XautoNameResolution");
+
+    if (command.getTestClassNameAllocator())
+      args.add("-Xtest-class-name-allocator");
+
+    if (command.getHttpProxyFile() != null) {
+      args.add("-httpproxyfile");
+      args.add(command.getHttpProxyFile().getAbsolutePath());
+    }
+
+    if (command.getHttpProxy() != null) {
+      args.add("-httpproxy");
+      args.add(command.getHttpProxy());
+    }
 
     if (command.getAddGeneratedAnnotation())
       args.add("-mark-generated");
 
     if (command.getCatalog() != null) {
       try {
-        args.add(1, "-Dxml.catalog.ignoreMissing");
+        System.setProperty("xml.catalog.ignoreMissing", "true");
+//        args.add(1, "-Dxml.catalog.ignoreMissing");
         args.add("-catalog");
         args.add(command.getCatalog().toURI().toURL().toString());
       }
@@ -480,102 +641,162 @@ public class XJCompiler {
       args.add(command.getPackageName());
     }
 
-    try {
-      if (command.getDestDir() != null) {
-        args.add("-d");
-        args.add(command.getDestDir().getAbsolutePath());
+    if (command.getDestDir() != null) {
+      args.add("-d");
+      args.add(command.getDestDir().getAbsolutePath());
 
-        if (!command.getDestDir().exists() && !command.getDestDir().mkdirs()) {
-          throw new JAXBException("Unable to create output directory " + command.getDestDir().getAbsolutePath());
-        }
-        // FIXME: This does not work because the files that are written are only known by xjc, so I cannot
-        // FIXME: stop this generator from overwriting them if overwrite=false
+      if (!command.getDestDir().exists() && !command.getDestDir().mkdirs())
+        throw new JAXBException("Unable to create output directory " + command.getDestDir().getAbsolutePath());
+
+      // FIXME: This does not work because the files that are written are only known by xjc, so I cannot
+      // FIXME: stop this generator from overwriting them if overwrite=false
 //        else if (command.isOverwrite()) {
 //          for (final File file : command.getDestDir().listFiles())
 //            Files.walk(file.toPath()).map(Path::toFile).filter(a -> a.getName().endsWith(".java")).sorted((o1, o2) -> o2.compareTo(o1)).forEach(File::delete);
 //        }
+    }
+
+    for (final URL schema : command.getSchemas()) {
+      if (URLs.isLocalFile(schema)) {
+        final File file = new File(schema.getFile());
+        if (!file.exists())
+          throw new FileNotFoundException(file.getAbsolutePath());
+
+        args.add(file.getAbsolutePath());
+      }
+      else {
+        try (final InputStream in = schema.openStream()) {
+          final File file = File.createTempFile(URLs.getName(schema), "");
+          args.add(file.getAbsolutePath());
+          file.deleteOnExit();
+          Files.write(file.toPath(), Streams.readBytes(in));
+        }
       }
 
-      for (final URL schema : command.getSchemas()) {
-        if (URLs.isLocalFile(schema)) {
-          final File file = new File(schema.getFile());
-          if (!file.exists())
-            throw new FileNotFoundException(file.getAbsolutePath());
+      args.add(schema.getFile());
+    }
 
-          args.add(file.getAbsolutePath());
+    if (command.getXJBs() != null) {
+      for (final URL xjb : command.getXJBs()) {
+        args.add("-b");
+        if (URLs.isLocalFile(xjb)) {
+          args.add(xjb.getFile());
         }
         else {
-          try (final InputStream in = schema.openStream()) {
-            final File file = File.createTempFile(URLs.getName(schema), "");
+          try (final InputStream in = xjb.openStream()) {
+            final File file = File.createTempFile(URLs.getName(xjb), "");
             args.add(file.getAbsolutePath());
             file.deleteOnExit();
             Files.write(file.toPath(), Streams.readBytes(in));
           }
         }
-
-        args.add(schema.getFile());
       }
-
-      if (command.getXJBs() != null) {
-        for (final URL xjb : command.getXJBs()) {
-          args.add("-b");
-          if (URLs.isLocalFile(xjb)) {
-            args.add(xjb.getFile());
-          }
-          else {
-            try (final InputStream in = xjb.openStream()) {
-              final File file = File.createTempFile(URLs.getName(xjb), "");
-              args.add(file.getAbsolutePath());
-              file.deleteOnExit();
-              Files.write(file.toPath(), Streams.readBytes(in));
-            }
-          }
-        }
-      }
-
-      if (command.getGenerateEpisode()) {
-        final File metaInfDir = new File(command.getDestDir(), "META-INF" + File.separator + "sun-jaxb.episode");
-        if (!metaInfDir.getParentFile().mkdirs())
-          throw new JAXBException("Unable to create output directory: " + metaInfDir.getParentFile().getAbsolutePath());
-
-        args.add("-episode");
-        args.add(metaInfDir.getAbsolutePath());
-      }
-
-      final FilterOutputStream out = new FilterOutputStream(System.out) {
-        final StringBuilder buffer = new StringBuilder();
-
-        @Override
-        public void write(final int b) throws IOException {
-          if (b == '\n')
-            flush();
-          else
-            buffer.append((char)b);
-        }
-
-        @Override
-        public void flush() throws IOException {
-          super.flush();
-          if (buffer.length() == 0)
-            return;
-
-          final String line = buffer.toString();
-          buffer.setLength(0);
-          if (line.startsWith("[ERROR] "))
-            logger.error(line.substring(8));
-          else if (line.startsWith("[WARNING] "))
-            logger.warn(line.substring(10));
-          else
-            logger.info(line);
-        }
-      };
-
-      final int exitCode = Processes.forkSync(null, out, null, true, null, null, args.toArray(new String[args.size()]));
-      if (exitCode != 0)
-        throw new JAXBException("xjc finished with code: " + exitCode + "\n" + FastCollections.toString(args, " "));
     }
-    catch (final IOException | InterruptedException e) {
-      throw new JAXBException(e.getMessage(), e);
+
+    if (command.getGenerateEpisode()) {
+      final File metaInfDir = new File(command.getDestDir(), "META-INF" + File.separator + "sun-jaxb.episode");
+      if (!metaInfDir.getParentFile().mkdirs())
+        throw new JAXBException("Unable to create output directory: " + metaInfDir.getParentFile().getAbsolutePath());
+
+      args.add("-episode");
+      args.add(metaInfDir.getAbsolutePath());
+    }
+
+    final FilterOutputStream out = new FilterOutputStream(System.out) {
+      final StringBuilder buffer = new StringBuilder();
+
+      @Override
+      public void write(final int b) throws IOException {
+        if (b == '\n')
+          flush();
+        else
+          buffer.append((char)b);
+      }
+
+      @Override
+      public void flush() throws IOException {
+        super.flush();
+        if (buffer.length() == 0)
+          return;
+
+        final String line = buffer.toString();
+        buffer.setLength(0);
+        if (line.startsWith("[ERROR] "))
+          logger.error(line.substring(8));
+        else if (line.startsWith("[WARNING] "))
+          logger.warn(line.substring(10));
+        else
+          logger.info(line);
+      }
+    };
+
+    final MySecurityManager securityManager = new MySecurityManager(System.getSecurityManager());
+    try {
+      if (embedded) {
+        System.setSecurityManager(securityManager);
+
+        System.setProperty("com.sun.tools.xjc.XJCFacade.nohack", "true");
+        System.setProperty("com.sun.tools.xjc.Options.findServices", "true");
+        XJCFacade.main(args.toArray(new String[args.size()]));
+      }
+      else {
+        addJavaArgs(args, false);
+        final int exitCode = Processes.forkSync(null, out, null, true, null, null, args.toArray(new String[args.size()]));
+        if (exitCode != 0)
+          throw new JAXBException("xjc finished with code: " + exitCode + "\n" + FastCollections.toString(args, " "));
+      }
+    }
+    catch (final IOException e) {
+      throw e;
+    }
+    catch (final Throwable e) {
+      if (!(e instanceof ExitPolicyException))
+        throw new JAXBException(e.getMessage(), e);
+
+      securityManager.disable();
+      if (((ExitPolicyException)e).exitCode != 0) {
+        throw new JAXBException(FastCollections.toString(embedded ? addJavaArgs(args, true) : args, " "));
+      }
+    }
+  }
+
+  private static List<String> addJavaArgs(final List<String> args, final boolean addClassPath) {
+    args.addAll(0, Arrays.asList("-Dcom.sun.tools.xjc.XJCFacade.nohack=true", "-Dcom.sun.tools.xjc.Options.findServices=true"));
+    if (addClassPath)
+      args.addAll(0, Arrays.asList("-cp", System.getProperty("java.class.path"), XJCFacade.class.getName()));
+
+    args.add(0, "java");
+    return args;
+  }
+
+  private static class ExitPolicyException extends SecurityException {
+    private static final long serialVersionUID = 8756682857129876527L;
+    private final int exitCode;
+
+    private ExitPolicyException(final int exitCode) {
+      this.exitCode = exitCode;
+    }
+  }
+
+  private static class MySecurityManager extends SecurityManager {
+    private final SecurityManager securityManager;
+    private boolean enabled = true;
+
+    public MySecurityManager(final SecurityManager securityManager) {
+      this.securityManager = securityManager;
+    }
+
+    public void disable() {
+      enabled = false;
+    }
+
+    @Override
+    public void checkPermission(final Permission permission) {
+      if (enabled && permission.getName().startsWith("exitVM"))
+        throw new ExitPolicyException(Integer.parseInt(permission.getName().substring(permission.getName().indexOf('.') + 1)));
+
+      if (securityManager != null)
+        securityManager.checkPermission(permission);
     }
   }
 }

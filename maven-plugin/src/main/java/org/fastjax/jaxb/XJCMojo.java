@@ -51,6 +51,50 @@ import org.fastjax.xml.sax.XMLDocuments;
 @Mojo(name="xjc", defaultPhase=LifecyclePhase.GENERATE_SOURCES, requiresDependencyResolution=ResolutionScope.TEST)
 @Execute(goal="xjc")
 public final class XJCMojo extends GeneratorMojo {
+  /** Turn on debug mode. */
+  @Parameter(property="debug")
+  private boolean debug = false;
+
+  /** Generated files will be in read-only mode. */
+  @Parameter(property="readOnly")
+  private boolean readOnly = false;
+
+  /** Suppress generation of a file header with timestamp. */
+  @Parameter(property="noHeader")
+  private boolean noHeader = false;
+
+  /** Generates code that works around issues specific to 1.4 runtime. */
+  @Parameter(property="explicitAnnotation")
+  private boolean explicitAnnotation = false;
+
+  /** If {@code true} XML security features when parsing XML documents will be disabled. The default value is {@code false}. */
+  @Parameter(property="disableXmlSecurity")
+  private boolean disableXmlSecurity = false;
+
+  /** When on, generates content property for types with multiple xs:any derived elements (which is supposed to be correct behavior). */
+  @Parameter(property="contentForWildcard")
+  private boolean contentForWildcard = false;
+
+  /** If true, try to resolve name conflicts automatically by assigning mechanical numbers. */
+  @Parameter(property="autoNameResolution")
+  private boolean autoNameResolution = false;
+
+  /** This allocator has the final say on deciding the class name. */
+  @Parameter(property="testClassNameAllocator")
+  private boolean testClassNameAllocator = false;
+
+  /** Java module name in {@code module-info.java}. */
+  @Parameter(property="javaModule")
+  private String javaModule;
+
+  /** File defining proxyHost:proxyPort */
+  @Parameter(property="httpProxyFile")
+  private File httpProxyFile;
+
+  /** String defining proxyHost:proxyPort */
+  @Parameter(property="httpProxy")
+  private String httpProxy;
+
   /**
    * Corresponding XJC parameter: mark-generated.
    * This feature causes all of the generated code to have @Generated annotation.
@@ -253,8 +297,19 @@ public final class XJCMojo extends GeneratorMojo {
   @Override
   public void execute(final Configuration configuration) throws MojoExecutionException, MojoFailureException {
     File masterCatalog = null;
+    final XJCompiler.Command command = new XJCompiler.Command();
     try {
-      final XJCompiler.Command command = new XJCompiler.Command();
+      command.setDebug(debug);
+      command.setReadOnly(readOnly);
+      command.setNoHeader(noHeader);
+      command.setExplicitAnnotation(explicitAnnotation);
+      command.setDisableXmlSecurity(disableXmlSecurity);
+      command.setContentForWildcard(contentForWildcard);
+      command.setAutoNameResolution(autoNameResolution);
+      command.setTestClassNameAllocator(testClassNameAllocator);
+      command.setJavaModule(javaModule);
+      command.setHttpProxyFile(httpProxyFile);
+      command.setHttpProxy(httpProxy);
       command.setAddGeneratedAnnotation(addGeneratedAnnotation);
       command.setEnableIntrospection(enableIntrospection);
       command.setExtension(extension);
@@ -274,6 +329,7 @@ public final class XJCMojo extends GeneratorMojo {
       command.setDestDir(configuration.getDestDir());
       command.setOverwrite(configuration.getOverwrite());
       command.setGenerateEpisode(generateEpisode);
+
       masterCatalog = Files.createTempFile("catalog", ".cat").toFile();
       if (catalog != null)
         Files.copy(catalog.toPath(), masterCatalog.toPath(), StandardCopyOption.REPLACE_EXISTING);
@@ -293,14 +349,16 @@ public final class XJCMojo extends GeneratorMojo {
 
       command.addClasspath(MojoUtil.getExecutionClasspash(project, execution, (PluginDescriptor)this.getPluginContext().get("pluginDescriptor"), localRepository, artifactHandler));
       XJCompiler.compile(command);
-
-      masterCatalog.delete();
     }
     catch (final JAXBException e) {
       throw new MojoExecutionException(masterCatalog == null ? null : masterCatalog.getAbsolutePath(), e);
     }
     catch (final Exception e) {
       throw new MojoFailureException(masterCatalog == null ? null : masterCatalog.getAbsolutePath(), e);
+    }
+    finally {
+      if (!command.getDebug())
+        masterCatalog.delete();
     }
   }
 }

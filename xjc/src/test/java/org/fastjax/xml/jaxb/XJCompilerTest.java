@@ -17,6 +17,7 @@
 package org.fastjax.xml.jaxb;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.LinkedHashSet;
 
@@ -28,7 +29,7 @@ import org.junit.Test;
 
 public class XJCompilerTest {
   @Test
-  public void test() throws JAXBException {
+  public void test() throws IOException, JAXBException {
     final XJCompiler.Command command = new XJCompiler.Command();
     command.setSchemas(FastCollections.asCollection(new LinkedHashSet<URL>(), getClass().getResource("/test.xsd")));
     command.setDestDir(new File("target/generated-test-sources/jaxb"));
