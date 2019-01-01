@@ -1,5 +1,5 @@
 <!--
-  Copyright (c) 2017 FastJAX
+  Copyright (c) 2017 OpenJAX
   
   Permission is hereby granted, free of charge, to any person obtaining a copy
   of this software and associated documentation files (the "Software"), to deal
@@ -20,13 +20,12 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>org.fastjax.jaxb</groupId>
-    <artifactId>jaxb</artifactId>
+    <groupId>org.openjax.classic.jaxb</groupId>
+    <artifactId>classic-jaxb</artifactId>
     <version>0.8.1-SNAPSHOT</version>
   </parent>
   <artifactId>jaxb-xjc</artifactId>
   <name>${project.groupId}:${project.artifactId}</name>
-  <url>https://xjc.fastjax.org/</url>
   <build>
     <plugins>
       <plugin>
@@ -56,13 +55,13 @@
       <version>2.3.1</version>
     </dependency>
     <dependency>
-      <groupId>org.fastjax.xml</groupId>
+      <groupId>org.openjax.classic.xml</groupId>
       <artifactId>xml-sax</artifactId>
       <version>0.9.2-SNAPSHOT</version>
     </dependency>
     <dependency>
-      <groupId>org.fastjax</groupId>
-      <artifactId>exec</artifactId>
+      <groupId>org.openjax.classic</groupId>
+      <artifactId>classic-exec</artifactId>
       <version>0.8.9-SNAPSHOT</version>
     </dependency>
     <dependency>
@@ -71,8 +70,8 @@
       <version>1.1.0</version>
     </dependency>
     <dependency>
-      <groupId>org.fastjax</groupId>
-      <artifactId>test</artifactId>
+      <groupId>org.openjax.classic</groupId>
+      <artifactId>classic-test</artifactId>
       <version>0.6.9-SNAPSHOT</version>
       <scope>test</scope>
     </dependency>

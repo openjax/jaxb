@@ -1,5 +1,5 @@
 <!--
-  Copyright (c) 2017 FastJAX
+  Copyright (c) 2017 OpenJAX
 
   Permission is hereby granted, free of charge, to any person obtaining a copy
   of this software and associated documentation files (the "Software"), to deal
@@ -20,16 +20,15 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>org.fastjax</groupId>
-    <artifactId>fastjax</artifactId>
+    <groupId>org.openjax.classic</groupId>
+    <artifactId>classic</artifactId>
     <version>1.11.15-SNAPSHOT</version>
   </parent>
-  <groupId>org.fastjax.jaxb</groupId>
-  <artifactId>jaxb</artifactId>
+  <groupId>org.openjax.classic.jaxb</groupId>
+  <artifactId>classic-jaxb</artifactId>
   <version>0.8.1-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>${project.groupId}:${project.artifactId}</name>
-  <url>https://jaxb.fastjax.org/</url>
   <modules>
     <module>xjc</module>
     <module>maven-plugin</module>

@@ -1,4 +1,4 @@
-# FastJAX JAXB Maven Plugin
+# OpenJAX Classic JAXB Maven Plugin
 
 **Maven Plugin for JAX-B**
 
@@ -12,7 +12,7 @@ The `jaxb-maven-plugin` plugin is used for JAX-B.
 
 ### JavaDocs
 
-JavaDocs are available [here](https://jaxb.fastjax.org/javadocs/).
+JavaDocs are available [here](https://classic.openjax.org/jaxb/apidocs/).
 
 ### License
 

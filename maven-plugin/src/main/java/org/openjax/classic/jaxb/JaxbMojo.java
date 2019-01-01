@@ -1,4 +1,4 @@
-/* Copyright (c) 2017 FastJAX
+/* Copyright (c) 2017 OpenJAX
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -14,7 +14,7 @@
  * program. If not, see <http://opensource.org/licenses/MIT/>.
  */
 
-package org.fastjax.jaxb;
+package org.openjax.classic.jaxb;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -38,11 +38,12 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
-import org.fastjax.maven.mojo.GeneratorMojo;
-import org.fastjax.maven.mojo.MojoUtil;
-import org.fastjax.maven.mojo.SourceInput;
-import org.fastjax.util.FastCollections;
-import org.fastjax.xml.sax.XMLDocuments;
+import org.openjax.classic.jaxb.xjc.XJCompiler;
+import org.openjax.classic.maven.mojo.GeneratorMojo;
+import org.openjax.classic.maven.mojo.MojoUtil;
+import org.openjax.classic.maven.mojo.SourceInput;
+import org.openjax.classic.util.FastCollections;
+import org.openjax.classic.xml.sax.XMLDocuments;
 
 /**
  * Mojo that creates compile-scope Java source or binaries from XML schema(s) by
@@ -50,7 +51,7 @@ import org.fastjax.xml.sax.XMLDocuments;
  */
 @Mojo(name="xjc", defaultPhase=LifecyclePhase.GENERATE_SOURCES, requiresDependencyResolution=ResolutionScope.TEST)
 @Execute(goal="xjc")
-public final class XJCMojo extends GeneratorMojo {
+public final class JaxbMojo extends GeneratorMojo {
   /** Turn on debug mode. */
   @Parameter(property="debug")
   private boolean debug = false;

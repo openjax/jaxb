@@ -1,4 +1,4 @@
-/* Copyright (c) 2018 FastJAX
+/* Copyright (c) 2018 OpenJAX
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -14,7 +14,7 @@
  * program. If not, see <http://opensource.org/licenses/MIT/>.
  */
 
-package org.fastjax.xml.jaxb;
+package org.openjax.classic.jaxb.xjc;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,9 +23,8 @@ import java.util.LinkedHashSet;
 
 import javax.xml.bind.JAXBException;
 
-import org.fastjax.jaxb.XJCompiler;
-import org.fastjax.util.FastCollections;
 import org.junit.Test;
+import org.openjax.classic.util.FastCollections;
 
 public class XJCompilerTest {
   @Test

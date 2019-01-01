@@ -1,4 +1,4 @@
-/* Copyright (c) 2017 FastJAX
+/* Copyright (c) 2017 OpenJAX
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -14,7 +14,7 @@
  * program. If not, see <http://opensource.org/licenses/MIT/>.
  */
 
-package org.fastjax.jaxb;
+package org.openjax.classic.jaxb.xjc;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -38,14 +38,14 @@ import javax.xml.bind.JAXBException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.LogFactory;
-import org.fastjax.exec.Processes;
-import org.fastjax.io.Streams;
-import org.fastjax.net.URLs;
-import org.fastjax.util.ClassLoaders;
-import org.fastjax.util.FastCollections;
 import org.jvnet.annox.parser.XAnnotationParser;
 import org.jvnet.jaxb2_commons.plugin.AbstractParameterizablePlugin;
 import org.jvnet.jaxb2_commons.plugin.annotate.AnnotatePlugin;
+import org.openjax.classic.exec.Processes;
+import org.openjax.classic.io.Streams;
+import org.openjax.classic.net.URLs;
+import org.openjax.classic.util.ClassLoaders;
+import org.openjax.classic.util.FastCollections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -531,7 +531,7 @@ public class XJCompiler {
 
   private static final Logger logger = LoggerFactory.getLogger(XJCompiler.class);
   // FIXME: Embedded mode breaks in openjax/rdb/sqlx when calling:
-  // FIXME: mvn org.fastjax.jaxb:jaxb-maven-plugin:0.8.1-SNAPSHOT:xjc@jaxb-test-generate
+  // FIXME: mvn org.openjax.classic.jaxb:jaxb-maven-plugin:0.8.1-SNAPSHOT:xjc@jaxb-test-generate
   private static boolean embedded = false;
 
   public static void compile(final Command command) throws IOException, JAXBException {

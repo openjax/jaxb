@@ -1,4 +1,4 @@
-/* Copyright (c) 2017 FastJAX
+/* Copyright (c) 2017 OpenJAX
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -14,7 +14,7 @@
  * program. If not, see <http://opensource.org/licenses/MIT/>.
  */
 
-package org.fastjax.jaxb;
+package org.openjax.classic.jaxb.xjc;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -36,8 +36,8 @@ import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 
-import org.fastjax.xml.sax.LoggingErrorHandler;
-import org.fastjax.xml.sax.Validator;
+import org.openjax.classic.xml.sax.LoggingErrorHandler;
+import org.openjax.classic.xml.sax.Validator;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 
