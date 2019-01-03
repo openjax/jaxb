@@ -14,7 +14,7 @@
  * program. If not, see <http://opensource.org/licenses/MIT/>.
  */
 
-package org.openjax.classic.jaxb;
+package org.openjax.standard.jaxb;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -38,12 +38,12 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
-import org.openjax.classic.jaxb.xjc.XJCompiler;
-import org.openjax.classic.maven.mojo.GeneratorMojo;
-import org.openjax.classic.maven.mojo.MojoUtil;
-import org.openjax.classic.maven.mojo.SourceInput;
-import org.openjax.classic.util.FastCollections;
-import org.openjax.classic.xml.sax.XMLDocuments;
+import org.openjax.standard.jaxb.xjc.XJCompiler;
+import org.openjax.standard.maven.mojo.GeneratorMojo;
+import org.openjax.standard.maven.mojo.MojoUtil;
+import org.openjax.standard.maven.mojo.SourceInput;
+import org.openjax.standard.util.FastCollections;
+import org.openjax.standard.xml.sax.XMLDocuments;
 
 /**
  * Mojo that creates compile-scope Java source or binaries from XML schema(s) by

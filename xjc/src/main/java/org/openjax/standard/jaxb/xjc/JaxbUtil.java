@@ -14,7 +14,7 @@
  * program. If not, see <http://opensource.org/licenses/MIT/>.
  */
 
-package org.openjax.classic.jaxb.xjc;
+package org.openjax.standard.jaxb.xjc;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -36,8 +36,8 @@ import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 
-import org.openjax.classic.xml.sax.LoggingErrorHandler;
-import org.openjax.classic.xml.sax.Validator;
+import org.openjax.standard.xml.sax.LoggingErrorHandler;
+import org.openjax.standard.xml.sax.Validator;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 

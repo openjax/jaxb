@@ -14,7 +14,7 @@
  * program. If not, see <http://opensource.org/licenses/MIT/>.
  */
 
-package org.openjax.classic.jaxb.xjc;
+package org.openjax.standard.jaxb.xjc;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -41,11 +41,11 @@ import org.apache.commons.logging.LogFactory;
 import org.jvnet.annox.parser.XAnnotationParser;
 import org.jvnet.jaxb2_commons.plugin.AbstractParameterizablePlugin;
 import org.jvnet.jaxb2_commons.plugin.annotate.AnnotatePlugin;
-import org.openjax.classic.exec.Processes;
-import org.openjax.classic.io.Streams;
-import org.openjax.classic.net.URLs;
-import org.openjax.classic.util.ClassLoaders;
-import org.openjax.classic.util.FastCollections;
+import org.openjax.standard.exec.Processes;
+import org.openjax.standard.io.Streams;
+import org.openjax.standard.net.URLs;
+import org.openjax.standard.util.ClassLoaders;
+import org.openjax.standard.util.FastCollections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -531,7 +531,7 @@ public class XJCompiler {
 
   private static final Logger logger = LoggerFactory.getLogger(XJCompiler.class);
   // FIXME: Embedded mode breaks in openjax/rdb/sqlx when calling:
-  // FIXME: mvn org.openjax.classic.jaxb:jaxb-maven-plugin:0.8.1-SNAPSHOT:xjc@jaxb-test-generate
+  // FIXME: mvn org.openjax.standard.jaxb:jaxb-maven-plugin:0.8.1-SNAPSHOT:xjc@jaxb-test-generate
   private static boolean embedded = false;
 
   public static void compile(final Command command) throws IOException, JAXBException {

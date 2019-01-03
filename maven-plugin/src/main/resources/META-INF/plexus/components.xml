@@ -23,7 +23,7 @@
       <configuration>
         <id>xjc</id>
         <default-phases>
-          <generate-sources>org.openjax.classic.jaxb:jaxb-maven-plugin:xjc</generate-sources>
+          <generate-sources>org.openjax.standard.jaxb:jaxb-maven-plugin:xjc</generate-sources>
         </default-phases>
       </configuration>
     </component>
@@ -37,7 +37,7 @@
           <phase>xjc</phase>
         </phases>
         <default-phases>
-          <xjc>org.openjax.classic.jaxb:jaxb-maven-plugin:xjc</xjc>
+          <xjc>org.openjax.standard.jaxb:jaxb-maven-plugin:xjc</xjc>
         </default-phases>
       </configuration>
     </component>
