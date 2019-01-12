@@ -1,6 +1,8 @@
 # OpenJAX Standard JAXB Maven Plugin
 
-**Maven Plugin for JAX-B**
+> Maven Plugin for JAX-B
+
+[![Build Status](https://travis-ci.org/openjax/standard-jaxb.png)](https://travis-ci.org/openjax/standard-jaxb)
 
 ### Introduction
 
