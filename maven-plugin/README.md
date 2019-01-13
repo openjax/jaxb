@@ -3,6 +3,7 @@
 > Maven Plugin for JAX-B
 
 [![Build Status](https://travis-ci.org/openjax/standard-jaxb.png)](https://travis-ci.org/openjax/standard-jaxb)
+[![Coverage Status](https://coveralls.io/repos/github/openjax/standard-jaxb/badge.svg)](https://coveralls.io/github/openjax/standard-jaxb)
 
 ### Introduction
 
