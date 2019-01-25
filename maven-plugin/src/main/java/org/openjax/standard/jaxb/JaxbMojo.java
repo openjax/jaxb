@@ -337,8 +337,9 @@ public final class JaxbMojo extends GeneratorMojo {
 
       final URL[] schemas = configuration.getSourceInputs("schemas");
       try (final OutputStreamWriter out = new FileWriter(masterCatalog)) {
-        for (final URL schema : schemas)
+        for (final URL schema : schemas) {
           out.write(XMLDocuments.parse(schema, false, true).getCatalog().toTR9401());
+        }
       }
 
       command.setCatalog(masterCatalog);
@@ -352,10 +353,10 @@ public final class JaxbMojo extends GeneratorMojo {
       XJCompiler.compile(command);
     }
     catch (final JAXBException e) {
-      throw new MojoExecutionException(masterCatalog == null ? null : masterCatalog.getAbsolutePath(), e);
+      throw new MojoExecutionException(e.getClass().getSimpleName() + ": " + e.getMessage(), e);
     }
     catch (final Exception e) {
-      throw new MojoFailureException(masterCatalog == null ? null : masterCatalog.getAbsolutePath(), e);
+      throw new MojoFailureException(e.getClass().getSimpleName() + ": " + e.getMessage(), e);
     }
     finally {
       if (!command.getDebug())
