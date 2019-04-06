@@ -25,7 +25,6 @@ import javax.xml.bind.JAXBException;
 
 import org.junit.Test;
 import org.openjax.standard.util.FastCollections;
-import org.openjax.standard.jaxb.xjc.XJCompiler;
 
 public class XJCompilerTest {
   @Test
