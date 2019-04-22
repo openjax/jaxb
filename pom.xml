@@ -25,7 +25,7 @@
     <version>1.11.15-SNAPSHOT</version>
   </parent>
   <groupId>org.openjax.standard.jaxb</groupId>
-  <artifactId>standard-jaxb</artifactId>
+  <artifactId>jaxb</artifactId>
   <version>0.8.1-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>${project.groupId}:${project.artifactId}</name>
