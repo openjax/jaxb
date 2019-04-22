@@ -31,6 +31,6 @@
   <name>${project.groupId}:${project.artifactId}</name>
   <modules>
     <module>xjc</module>
-    <module>maven-plugin</module>
+    <module>jaxb-maven-plugin</module>
   </modules>
 </project>
