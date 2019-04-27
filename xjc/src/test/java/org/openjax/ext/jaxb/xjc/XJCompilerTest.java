@@ -14,7 +14,7 @@
  * program. If not, see <http://opensource.org/licenses/MIT/>.
  */
 
-package org.openjax.standard.jaxb.xjc;
+package org.openjax.ext.jaxb.xjc;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,7 +24,7 @@ import java.util.LinkedHashSet;
 import javax.xml.bind.JAXBException;
 
 import org.junit.Test;
-import org.openjax.standard.util.FastCollections;
+import org.openjax.ext.util.FastCollections;
 
 public class XJCompilerTest {
   @Test
