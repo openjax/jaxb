@@ -28,7 +28,10 @@
   <artifactId>jaxb</artifactId>
   <version>0.8.1-SNAPSHOT</version>
   <packaging>pom</packaging>
-  <name>${project.groupId}:${project.artifactId}</name>
+  <name>OpenJAX Extensions JAXB</name>
+  <description>
+    A supplementary extension to the javax.xml.bind package.
+  </description>
   <modules>
     <module>xjc</module>
     <module>jaxb-maven-plugin</module>

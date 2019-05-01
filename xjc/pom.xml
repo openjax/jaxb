@@ -25,7 +25,10 @@
     <version>0.8.1-SNAPSHOT</version>
   </parent>
   <artifactId>xjc</artifactId>
-  <name>${project.groupId}:${project.artifactId}</name>
+  <name>OpenJAX Extensions JAXB XJC</name>
+  <description>
+    JAXB code generation with XJC.
+  </description>
   <dependencies>
     <dependency>
       <groupId>com.sun.org.apache.xml.internal</groupId>
