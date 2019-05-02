@@ -20,13 +20,13 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>org.openjax.ext.jaxb</groupId>
+    <groupId>org.openjax.jaxb</groupId>
     <artifactId>jaxb</artifactId>
     <version>0.8.1-SNAPSHOT</version>
   </parent>
   <artifactId>jaxb-maven-plugin</artifactId>
   <packaging>maven-plugin</packaging>
-  <name>OpenJAX Extensions JAXB Maven Plugin</name>
+  <name>OpenJAX JAXB Maven Plugin</name>
   <description>
     Maven Plugin for JAXB code generation with XJC.
   </description>
@@ -94,7 +94,7 @@
       <build>
         <plugins>
           <plugin>
-            <groupId>org.openjax.ext.jaxb</groupId>
+            <groupId>org.openjax.jaxb</groupId>
             <artifactId>jaxb-maven-plugin</artifactId>
             <version>${project.version}</version>
             <executions>
@@ -129,12 +129,12 @@
       <version>3.6.1</version>
     </dependency>
     <dependency>
-      <groupId>org.openjax.ext.maven</groupId>
+      <groupId>org.openjax.maven</groupId>
       <artifactId>mojo</artifactId>
       <version>0.3.5-SNAPSHOT</version>
     </dependency>
     <dependency>
-      <groupId>org.openjax.ext.jaxb</groupId>
+      <groupId>org.openjax.jaxb</groupId>
       <artifactId>xjc</artifactId>
       <version>0.8.1-SNAPSHOT</version>
     </dependency>

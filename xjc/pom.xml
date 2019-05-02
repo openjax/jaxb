@@ -20,12 +20,12 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>org.openjax.ext.jaxb</groupId>
+    <groupId>org.openjax.jaxb</groupId>
     <artifactId>jaxb</artifactId>
     <version>0.8.1-SNAPSHOT</version>
   </parent>
   <artifactId>xjc</artifactId>
-  <name>OpenJAX Extensions JAXB XJC</name>
+  <name>OpenJAX JAXB XJC</name>
   <description>
     JAXB code generation with XJC.
   </description>
@@ -46,12 +46,12 @@
       <version>2.3.1</version>
     </dependency>
     <dependency>
-      <groupId>org.openjax.ext.xml</groupId>
+      <groupId>org.openjax.xml</groupId>
       <artifactId>sax</artifactId>
       <version>0.9.2-SNAPSHOT</version>
     </dependency>
     <dependency>
-      <groupId>org.openjax.ext</groupId>
+      <groupId>org.openjax</groupId>
       <artifactId>exec</artifactId>
       <version>0.8.9-SNAPSHOT</version>
     </dependency>
@@ -61,7 +61,7 @@
       <version>1.1.0</version>
     </dependency>
     <dependency>
-      <groupId>org.openjax.ext</groupId>
+      <groupId>org.openjax</groupId>
       <artifactId>test</artifactId>
       <version>0.6.9-SNAPSHOT</version>
       <scope>test</scope>
