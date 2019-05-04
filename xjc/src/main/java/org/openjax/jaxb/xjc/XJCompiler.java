@@ -41,11 +41,11 @@ import org.apache.commons.logging.LogFactory;
 import org.jvnet.annox.parser.XAnnotationParser;
 import org.jvnet.jaxb2_commons.plugin.AbstractParameterizablePlugin;
 import org.jvnet.jaxb2_commons.plugin.annotate.AnnotatePlugin;
-import org.openjax.exec.Processes;
-import org.openjax.io.Streams;
-import org.openjax.net.URLs;
-import org.openjax.util.ClassLoaders;
-import org.openjax.util.FastCollections;
+import org.libj.exec.Processes;
+import org.libj.io.Streams;
+import org.libj.net.URLs;
+import org.libj.util.ClassLoaders;
+import org.libj.util.FastCollections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

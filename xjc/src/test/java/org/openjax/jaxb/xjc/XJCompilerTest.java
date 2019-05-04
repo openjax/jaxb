@@ -24,7 +24,7 @@ import java.util.LinkedHashSet;
 import javax.xml.bind.JAXBException;
 
 import org.junit.Test;
-import org.openjax.util.FastCollections;
+import org.libj.util.FastCollections;
 
 public class XJCompilerTest {
   @Test

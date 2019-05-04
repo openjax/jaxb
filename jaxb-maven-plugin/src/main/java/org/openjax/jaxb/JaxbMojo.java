@@ -42,8 +42,8 @@ import org.openjax.jaxb.xjc.XJCompiler;
 import org.openjax.maven.mojo.GeneratorMojo;
 import org.openjax.maven.mojo.MojoUtil;
 import org.openjax.maven.mojo.SourceInput;
-import org.openjax.util.FastCollections;
 import org.openjax.xml.sax.XMLDocuments;
+import org.libj.util.FastCollections;
 
 /**
  * Mojo that creates compile-scope Java source or binaries from XML schema(s) by
