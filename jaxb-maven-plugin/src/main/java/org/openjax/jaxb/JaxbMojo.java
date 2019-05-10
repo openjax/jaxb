@@ -38,12 +38,12 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
+import org.libj.util.CollectionUtil;
 import org.openjax.jaxb.xjc.XJCompiler;
 import org.openjax.maven.mojo.GeneratorMojo;
 import org.openjax.maven.mojo.MojoUtil;
 import org.openjax.maven.mojo.SourceInput;
 import org.openjax.xml.sax.XMLDocuments;
-import org.libj.util.FastCollections;
 
 /**
  * Mojo that creates compile-scope Java source or binaries from XML schema(s) by
@@ -51,7 +51,7 @@ import org.libj.util.FastCollections;
  */
 @Mojo(name="xjc", defaultPhase=LifecyclePhase.GENERATE_SOURCES, requiresDependencyResolution=ResolutionScope.TEST)
 @Execute(goal="xjc")
-public final class JaxbMojo extends GeneratorMojo {
+public class JaxbMojo extends GeneratorMojo {
   /** Turn on debug mode. */
   @Parameter(property="debug")
   private boolean debug = false;
@@ -344,10 +344,10 @@ public final class JaxbMojo extends GeneratorMojo {
 
       command.setCatalog(masterCatalog);
 
-      command.setSchemas(FastCollections.asCollection(new LinkedHashSet<URL>(), schemas));
+      command.setSchemas(CollectionUtil.asCollection(new LinkedHashSet<URL>(), schemas));
       final URL[] bindings = configuration.getSourceInputs("bindings");
       if (bindings != null)
-        command.setXJBs(FastCollections.asCollection(new LinkedHashSet<URL>(), bindings));
+        command.setXJBs(CollectionUtil.asCollection(new LinkedHashSet<URL>(), bindings));
 
       command.addClasspath(MojoUtil.getExecutionClasspash(project, execution, (PluginDescriptor)this.getPluginContext().get("pluginDescriptor"), localRepository, artifactHandler));
       XJCompiler.compile(command);

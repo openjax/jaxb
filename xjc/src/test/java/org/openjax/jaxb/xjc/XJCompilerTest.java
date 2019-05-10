@@ -24,13 +24,13 @@ import java.util.LinkedHashSet;
 import javax.xml.bind.JAXBException;
 
 import org.junit.Test;
-import org.libj.util.FastCollections;
+import org.libj.util.CollectionUtil;
 
 public class XJCompilerTest {
   @Test
   public void test() throws IOException, JAXBException {
     final XJCompiler.Command command = new XJCompiler.Command();
-    command.setSchemas(FastCollections.asCollection(new LinkedHashSet<URL>(), getClass().getResource("/test.xsd")));
+    command.setSchemas(CollectionUtil.asCollection(new LinkedHashSet<URL>(), getClass().getResource("/test.xsd")));
     command.setDestDir(new File("target/generated-test-sources/jaxb"));
     command.setExtension(true);
     XJCompiler.compile(command);

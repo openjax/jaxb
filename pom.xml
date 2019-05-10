@@ -30,7 +30,7 @@
   <packaging>pom</packaging>
   <name>OpenJAX JAXB</name>
   <description>
-    A supplementary extension to the javax.xml.bind package.
+    Convenient utilities and patterns for the javax.xml.bind package.
   </description>
   <modules>
     <module>xjc</module>

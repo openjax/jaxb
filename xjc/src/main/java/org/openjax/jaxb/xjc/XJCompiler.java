@@ -45,7 +45,7 @@ import org.libj.exec.Processes;
 import org.libj.io.Streams;
 import org.libj.net.URLs;
 import org.libj.util.ClassLoaders;
-import org.libj.util.FastCollections;
+import org.libj.util.CollectionUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -743,7 +743,7 @@ public class XJCompiler {
         addJavaArgs(args, false);
         final int exitCode = Processes.forkSync(null, out, null, true, null, null, args.toArray(new String[args.size()]));
         if (exitCode != 0)
-          throw new JAXBException("xjc finished with code: " + exitCode + "\n" + FastCollections.toString(args, " "));
+          throw new JAXBException("xjc finished with code: " + exitCode + "\n" + CollectionUtil.toString(args, " "));
       }
     }
     catch (final IOException e) {
@@ -755,7 +755,7 @@ public class XJCompiler {
 
       securityManager.disable();
       if (((ExitPolicyException)e).exitCode != 0) {
-        throw new JAXBException(FastCollections.toString(embedded ? addJavaArgs(args, true) : args, " "));
+        throw new JAXBException(CollectionUtil.toString(embedded ? addJavaArgs(args, true) : args, " "));
       }
     }
   }
