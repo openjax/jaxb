@@ -1,6 +1,6 @@
-# OpenJAX JAXB Maven Plugin
+# OpenJAX JAXB
 
-> Maven Plugin for JAX-B.
+> Convenience patterns for JAX-B.
 
 [![Build Status](https://travis-ci.org/openjax/jaxb.png)](https://travis-ci.org/openjax/jaxb)
 [![Coverage Status](https://coveralls.io/repos/github/openjax/jaxb/badge.svg)](https://coveralls.io/github/openjax/jaxb)
@@ -9,11 +9,7 @@
 
 ## Introduction
 
-The `jaxb-maven-plugin` plugin is used for JAX-B.
-
-## Goals Overview
-
-* [`xjc:xjc`](#xjcxjc) XJC.
+OpenJAX JAXB provides convenience patterns for [XJC](/xjc), as well as the [JAXB Maven Plugin](/jaxb-maven-plugin).
 
 ## Contributing
 
