@@ -22,7 +22,7 @@
   <parent>
     <groupId>org.openjax.jaxb</groupId>
     <artifactId>jaxb</artifactId>
-    <version>0.8.1-SNAPSHOT</version>
+    <version>0.8.1</version>
   </parent>
   <artifactId>xjc</artifactId>
   <name>OpenJAX JAXB XJC</name>
@@ -48,12 +48,12 @@
     <dependency>
       <groupId>org.openjax.xml</groupId>
       <artifactId>sax</artifactId>
-      <version>0.9.2-SNAPSHOT</version>
+      <version>0.9.2</version>
     </dependency>
     <dependency>
       <groupId>org.libj</groupId>
       <artifactId>exec</artifactId>
-      <version>0.8.9-SNAPSHOT</version>
+      <version>0.8.9</version>
     </dependency>
     <dependency>
       <groupId>org.jvnet.jaxb2_commons</groupId>
@@ -63,7 +63,7 @@
     <dependency>
       <groupId>org.libj</groupId>
       <artifactId>test</artifactId>
-      <version>0.6.9-SNAPSHOT</version>
+      <version>0.6.9</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
