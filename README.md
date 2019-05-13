@@ -1,7 +1,5 @@
 # OpenJAX JAXB
 
-> Convenience patterns for JAX-B.
-
 [![Build Status](https://travis-ci.org/openjax/jaxb.png)](https://travis-ci.org/openjax/jaxb)
 [![Coverage Status](https://coveralls.io/repos/github/openjax/jaxb/badge.svg)](https://coveralls.io/github/openjax/jaxb)
 [![Javadocs](https://www.javadoc.io/badge/org.openjax.jaxb/jaxb-maven-plugin.svg)](https://www.javadoc.io/doc/org.openjax.jaxb/jaxb-maven-plugin)
