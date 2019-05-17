@@ -24,6 +24,7 @@ import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.xml.bind.JAXBException;
 
@@ -38,11 +39,12 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
-import org.libj.util.CollectionUtil;
+import org.libj.net.URLs;
 import org.openjax.jaxb.xjc.XJCompiler;
 import org.openjax.maven.mojo.GeneratorMojo;
+import org.openjax.maven.mojo.FilterParameter;
+import org.openjax.maven.mojo.FilterType;
 import org.openjax.maven.mojo.MojoUtil;
-import org.openjax.maven.mojo.SourceInput;
 import org.openjax.xml.sax.XMLDocuments;
 
 /**
@@ -263,7 +265,7 @@ public class JaxbMojo extends GeneratorMojo {
    * </configuration>
    * }</pre></blockquote>
    */
-  @SourceInput
+  @FilterParameter(FilterType.URL)
   @Parameter(property="schemas", required=true)
   private List<String> schemas;
 
@@ -286,7 +288,7 @@ public class JaxbMojo extends GeneratorMojo {
    * </configuration>
    * }</pre></blockquote>
    */
-  @SourceInput
+  @FilterParameter(FilterType.URL)
   @Parameter(property="bindings")
   private List<String> bindings;
 
@@ -335,19 +337,20 @@ public class JaxbMojo extends GeneratorMojo {
       if (catalog != null)
         Files.copy(catalog.toPath(), masterCatalog.toPath(), StandardCopyOption.REPLACE_EXISTING);
 
-      final URL[] schemas = configuration.getSourceInputs("schemas");
+      final LinkedHashSet<URL> urls = new LinkedHashSet<>();
       try (final OutputStreamWriter out = new FileWriter(masterCatalog)) {
-        for (final URL schema : schemas) {
-          out.write(XMLDocuments.parse(schema, false, true).getCatalog().toTR9401());
+        for (final String schema : schemas) {
+          final URL url = new URL(schema);
+          urls.add(url);
+          out.write(XMLDocuments.parse(url, false, true).getCatalog().toTR9401());
         }
       }
 
       command.setCatalog(masterCatalog);
 
-      command.setSchemas(CollectionUtil.asCollection(new LinkedHashSet<URL>(), schemas));
-      final URL[] bindings = configuration.getSourceInputs("bindings");
-      if (bindings != null)
-        command.setXJBs(CollectionUtil.asCollection(new LinkedHashSet<URL>(), bindings));
+      command.setSchemas(urls);
+      if (bindings != null && bindings.size() > 0)
+        command.setXJBs(bindings.stream().map(t -> URLs.create(t)).collect(Collectors.toCollection(LinkedHashSet::new)));
 
       command.addClasspath(MojoUtil.getExecutionClasspash(project, execution, (PluginDescriptor)this.getPluginContext().get("pluginDescriptor"), localRepository, artifactHandler));
       XJCompiler.compile(command);
