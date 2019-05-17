@@ -22,7 +22,7 @@
   <parent>
     <groupId>org.openjax.jaxb</groupId>
     <artifactId>jaxb</artifactId>
-    <version>0.8.1</version>
+    <version>0.8.2-SNAPSHOT</version>
   </parent>
   <artifactId>jaxb-maven-plugin</artifactId>
   <packaging>maven-plugin</packaging>
@@ -131,12 +131,12 @@
     <dependency>
       <groupId>org.openjax.maven</groupId>
       <artifactId>mojo</artifactId>
-      <version>0.3.5</version>
+      <version>0.4.1-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.openjax.jaxb</groupId>
       <artifactId>xjc</artifactId>
-      <version>0.8.1</version>
+      <version>0.8.2-SNAPSHOT</version>
     </dependency>
   </dependencies>
 </project>
