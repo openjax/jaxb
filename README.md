@@ -1,4 +1,4 @@
-# OpenJAX JAXB
+# JAXB
 
 [![Build Status](https://travis-ci.org/openjax/jaxb.png)](https://travis-ci.org/openjax/jaxb)
 [![Coverage Status](https://coveralls.io/repos/github/openjax/jaxb/badge.svg)](https://coveralls.io/github/openjax/jaxb)
