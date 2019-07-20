@@ -105,7 +105,7 @@
     <dependency>
       <groupId>org.openjax.jaxb</groupId>
       <artifactId>xjc</artifactId>
-      <version>0.8.2-SNAPSHOT</version>
+      <version>${project.version}</version>
     </dependency>
   </dependencies>
 </project>
