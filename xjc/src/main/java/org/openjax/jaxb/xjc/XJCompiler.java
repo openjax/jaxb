@@ -280,7 +280,7 @@ public class XJCompiler {
         Collections.addAll(classpath, ClassLoaders.getClassPath());
       }
       catch (final URISyntaxException e) {
-        throw new UnsupportedOperationException(e);
+        throw new IllegalStateException(e);
       }
     }
 
@@ -598,7 +598,7 @@ public class XJCompiler {
         args.add(command.getCatalog().toURI().toURL().toString());
       }
       catch (final MalformedURLException e) {
-        throw new UnsupportedOperationException(e);
+        throw new IllegalStateException(e);
       }
     }
 
