@@ -41,9 +41,9 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.libj.net.URLs;
 import org.openjax.jaxb.xjc.XJCompiler;
-import org.openjax.maven.mojo.GeneratorMojo;
 import org.openjax.maven.mojo.FilterParameter;
 import org.openjax.maven.mojo.FilterType;
+import org.openjax.maven.mojo.GeneratorMojo;
 import org.openjax.maven.mojo.MojoUtil;
 import org.openjax.xml.sax.XMLDocuments;
 
@@ -350,7 +350,7 @@ public class JaxbMojo extends GeneratorMojo {
 
       command.setSchemas(urls);
       if (bindings != null && bindings.size() > 0)
-        command.setXJBs(bindings.stream().map(t -> URLs.create(t)).collect(Collectors.toCollection(LinkedHashSet::new)));
+        command.setXJBs(bindings.stream().map(URLs::create).collect(Collectors.toCollection(LinkedHashSet::new)));
 
       command.addClasspath(MojoUtil.getExecutionClasspash(project, execution, (PluginDescriptor)this.getPluginContext().get("pluginDescriptor"), localRepository, artifactHandler));
       XJCompiler.compile(command);
