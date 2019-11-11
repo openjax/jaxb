@@ -208,7 +208,7 @@ public final class JaxbUtil {
    * Parses an XML document at the specified {@code url} as an instance of a
    * JAXB binding class {@code cls}.
    *
-   * @param <T> The generic type of specified binding class {@code cls}.
+   * @param <T> The type of the specified binding class {@code cls}.
    * @param cls The JAXB binding class.
    * @param classLoader Class loader used to locate the implementation classes.
    * @param url The location of the XML document to parse.
@@ -218,14 +218,14 @@ public final class JaxbUtil {
    * @return An XML document at the specified {@code url} as an instance of a
    *         JAXB binding class {@code cls}.
    * @throws IOException If an I/O error has occurred.
-   * @throws UnmarshalException If {@code validate} is set to true, and
-   *           validation of the XML document at {@code url} fails; or if this
-   *           method is unable to perform the XML to Java binding.
+   * @throws UnmarshalException If {@code validate} is true, and validation of
+   *           the XML document at {@code url} fails; or if this method is
+   *           unable to perform the XML to Java binding.
    */
   public static <T>T parse(final Class<T> cls, final ClassLoader classLoader, final URL url, final ErrorHandler errorHandler, final boolean validate) throws IOException, UnmarshalException {
     if (validate) {
       try {
-        Validator.validate(url, false, errorHandler);
+        Validator.validate(url, errorHandler);
       }
       catch (final SAXException e) {
         throw new UnmarshalException(e);

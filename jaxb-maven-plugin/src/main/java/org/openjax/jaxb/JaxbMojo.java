@@ -18,7 +18,6 @@ package org.openjax.jaxb;
 
 import java.io.File;
 import java.io.FileWriter;
-import java.io.OutputStreamWriter;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
@@ -45,7 +44,7 @@ import org.openjax.maven.mojo.FilterParameter;
 import org.openjax.maven.mojo.FilterType;
 import org.openjax.maven.mojo.GeneratorMojo;
 import org.openjax.maven.mojo.MojoUtil;
-import org.openjax.xml.sax.XMLDocuments;
+import org.openjax.xml.sax.XMLCatalog;
 
 /**
  * Mojo that creates compile-scope Java source or binaries from XML schema(s) by
@@ -338,11 +337,11 @@ public class JaxbMojo extends GeneratorMojo {
         Files.copy(catalog.toPath(), masterCatalog.toPath(), StandardCopyOption.REPLACE_EXISTING);
 
       final LinkedHashSet<URL> urls = new LinkedHashSet<>();
-      try (final OutputStreamWriter out = new FileWriter(masterCatalog)) {
+      try (final FileWriter out = new FileWriter(masterCatalog)) {
         for (final String schema : schemas) {
           final URL url = new URL(schema);
           urls.add(url);
-          out.write(XMLDocuments.parse(url, false, true).getCatalog().toTR9401());
+          out.write(XMLCatalog.parse(url).toTR9401());
         }
       }
 
