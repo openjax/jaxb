@@ -338,7 +338,7 @@ public class JaxbMojo extends GeneratorMojo {
 
       final LinkedHashSet<URL> urls = new LinkedHashSet<>();
       try (final FileWriter out = new FileWriter(masterCatalog)) {
-        for (final String schema : schemas) {
+        for (final String schema : new LinkedHashSet<>(schemas)) {
           final URL url = new URL(schema);
           urls.add(url);
           out.write(XMLCatalog.parse(url).toTR9401());
@@ -349,7 +349,7 @@ public class JaxbMojo extends GeneratorMojo {
 
       command.setSchemas(urls);
       if (bindings != null && bindings.size() > 0)
-        command.setXJBs(bindings.stream().map(URLs::create).collect(Collectors.toCollection(LinkedHashSet::new)));
+        command.setXJBs(new LinkedHashSet<>(bindings).stream().map(URLs::create).collect(Collectors.toCollection(LinkedHashSet::new)));
 
       command.addClasspath(MojoUtil.getExecutionClasspash(project, execution, (PluginDescriptor)this.getPluginContext().get("pluginDescriptor"), localRepository, artifactHandler));
       XJCompiler.compile(command);
