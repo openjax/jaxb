@@ -591,15 +591,10 @@ public class XJCompiler {
       args.add("-mark-generated");
 
     if (command.getCatalog() != null) {
-      try {
-        System.setProperty("xml.catalog.ignoreMissing", "true");
-//        args.add(1, "-Dxml.catalog.ignoreMissing");
-        args.add("-catalog");
-        args.add(command.getCatalog().toURI().toURL().toString());
-      }
-      catch (final MalformedURLException e) {
-        throw new IllegalStateException(e);
-      }
+      System.setProperty("xml.catalog.ignoreMissing", "true");
+//      args.add(1, "-Dxml.catalog.ignoreMissing");
+      args.add("-catalog");
+      args.add(URLs.fromURI(command.getCatalog().toURI()).toString());
     }
 
     if (command.getEnableIntrospection())
