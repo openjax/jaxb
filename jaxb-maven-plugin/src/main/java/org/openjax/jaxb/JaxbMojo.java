@@ -44,7 +44,7 @@ import org.openjax.maven.mojo.FilterParameter;
 import org.openjax.maven.mojo.FilterType;
 import org.openjax.maven.mojo.GeneratorMojo;
 import org.openjax.maven.mojo.MojoUtil;
-import org.openjax.xml.sax.XmlAuditParser;
+import org.openjax.xml.sax.XmlPreviewParser;
 
 /**
  * Mojo that creates compile-scope Java source or binaries from XML schema(s) by
@@ -341,7 +341,7 @@ public class JaxbMojo extends GeneratorMojo {
         for (final String schema : new LinkedHashSet<>(schemas)) {
           final URL url = new URL(schema);
           urls.add(url);
-          out.write(XmlAuditParser.parse(url).getCatalog().toTR9401());
+          out.write(XmlPreviewParser.parse(url).getCatalog().toTR9401());
         }
       }
 
