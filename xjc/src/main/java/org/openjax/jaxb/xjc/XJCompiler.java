@@ -21,9 +21,11 @@ import java.io.FileNotFoundException;
 import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.RandomAccessFile;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.security.Permission;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -45,6 +47,7 @@ import org.libj.io.Streams;
 import org.libj.net.URLs;
 import org.libj.util.ClassLoaders;
 import org.libj.util.CollectionUtil;
+import org.libj.util.function.Throwing;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,6 +60,9 @@ public class XJCompiler {
   public static class Command {
     private boolean debug = false;
 
+    /** If true, the @SuppressWarnings annotation will be added to all generated classes */
+    private boolean suppressWarnings = true;
+
     /** Generated files will be in read-only mode. */
     private boolean readOnly = false;
 
@@ -66,7 +72,7 @@ public class XJCompiler {
     /** Generates code that works around issues specific to 1.4 runtime. */
     private boolean explicitAnnotation = false;
 
-    /** If {@code true} XML security features when parsing XML documents will be disabled. The default value is {@code false}. */
+    /** If true, XML security features when parsing XML documents will be disabled. The default value is {@code false}. */
     private boolean disableXmlSecurity = false;
 
     /** When on, generates content property for types with multiple xs:any derived elements (which is supposed to be correct behavior). */
@@ -289,6 +295,14 @@ public class XJCompiler {
 
     public void setDebug(final boolean debug) {
       this.debug = debug;
+    }
+
+    public boolean getSuppressWarnings() {
+      return this.suppressWarnings;
+    }
+
+    public void setSuppressWarnings(final boolean suppressWarnings) {
+      this.suppressWarnings = suppressWarnings;
     }
 
     public boolean getReadOnly() {
@@ -659,10 +673,10 @@ public class XJCompiler {
         args.add(file.getAbsolutePath());
       }
       else {
+        final File file = File.createTempFile(URLs.getName(schema), "");
+        args.add(file.getAbsolutePath());
+        file.deleteOnExit();
         try (final InputStream in = schema.openStream()) {
-          final File file = File.createTempFile(URLs.getName(schema), "");
-          args.add(file.getAbsolutePath());
-          file.deleteOnExit();
           Files.write(file.toPath(), Streams.readBytes(in));
         }
       }
@@ -677,10 +691,10 @@ public class XJCompiler {
           args.add(xjb.getFile());
         }
         else {
+          final File file = File.createTempFile(URLs.getName(xjb), "");
+          args.add(file.getAbsolutePath());
+          file.deleteOnExit();
           try (final InputStream in = xjb.openStream()) {
-            final File file = File.createTempFile(URLs.getName(xjb), "");
-            args.add(file.getAbsolutePath());
-            file.deleteOnExit();
             Files.write(file.toPath(), Streams.readBytes(in));
           }
         }
@@ -735,9 +749,17 @@ public class XJCompiler {
       }
       else {
         addJavaArgs(args, false);
-        final int exitCode = Processes.forkSync(null, out, null, true, null, null, args.toArray(new String[args.size()]));
+        final int exitCode = Processes.forkSync(null, out, out, true, null, null, args.toArray(new String[args.size()]));
         if (exitCode != 0)
           throw new JAXBException("xjc finished with code: " + exitCode + "\n" + CollectionUtil.toString(args, " "));
+      }
+
+      if (command.getSuppressWarnings()) {
+        Files
+          .walk(command.getDestDir().toPath())
+          .filter(p -> p.getFileName().toString().endsWith(".java"))
+          .map(Path::toFile)
+          .forEach(Throwing.rethrow(XJCompiler::insertSuppressWarnings));
       }
     }
     catch (final IOException e) {
@@ -750,6 +772,49 @@ public class XJCompiler {
       securityManager.disable();
       if (((ExitPolicyException)e).exitCode != 0) {
         throw new JAXBException(CollectionUtil.toString(embedded ? addJavaArgs(args, true) : args, " "));
+      }
+    }
+  }
+
+  private static void insertSuppressWarnings(final File file) throws IOException {
+    final String insert = "@" + SuppressWarnings.class.getName() + "(\"all\")\n";
+    final String find1 = "public class";
+    final String find2 = "public abstract class";
+    final byte[] b1 = insert.getBytes();
+    final byte[] b2 = new byte[b1.length];
+
+    try (final RandomAccessFile raf = new RandomAccessFile(file, "rw")) {
+      for (String line; (line = raf.readLine()) != null;) {
+        if (line.regionMatches(0, insert, 0, insert.length() - 1))
+          return;
+
+        if (line.startsWith(find1) || line.startsWith(find2)) {
+          int l1 = b1.length;
+          long p = raf.getFilePointer() - line.length() - 1;
+          raf.seek(p);
+          while (true) {
+            int l2 = raf.read(b2);
+            raf.seek(p);
+            if (l1 == -1)
+              return;
+
+            raf.write(b1, 0, l1);
+            if (l1 < b1.length)
+              return;
+
+            p = raf.getFilePointer();
+            l1 = raf.read(b1);
+            raf.seek(p);
+            if (l2 == -1)
+              return;
+
+            raf.write(b2, 0, l2);
+            if (l2 < b2.length)
+              return;
+
+            p = raf.getFilePointer();
+          }
+        }
       }
     }
   }
