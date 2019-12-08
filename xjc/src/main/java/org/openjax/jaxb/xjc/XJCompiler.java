@@ -765,12 +765,12 @@ public class XJCompiler {
     catch (final IOException e) {
       throw e;
     }
-    catch (final Throwable e) {
-      if (!(e instanceof ExitPolicyException))
-        throw new JAXBException(e.getMessage(), e);
+    catch (final Throwable t) {
+      if (!(t instanceof ExitPolicyException))
+        throw new JAXBException(t.getMessage(), t);
 
       securityManager.disable();
-      if (((ExitPolicyException)e).exitCode != 0) {
+      if (((ExitPolicyException)t).exitCode != 0) {
         throw new JAXBException(CollectionUtil.toString(embedded ? addJavaArgs(args, true) : args, " "));
       }
     }
