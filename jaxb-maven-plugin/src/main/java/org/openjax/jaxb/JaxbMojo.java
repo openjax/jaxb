@@ -253,8 +253,9 @@ public class JaxbMojo extends GeneratorMojo {
    * searched for XSD files to include (in the case of directories). Configure
    * using standard Maven structure for Lists:
    *
-   * <blockquote><pre>
-   * {@code <configuration>
+   * <pre>
+   * {@code
+   * <configuration>
    *   ...
    *   <schemas>
    *     <schema>some/explicit/relative/file.xsd</schema>
@@ -262,7 +263,8 @@ public class JaxbMojo extends GeneratorMojo {
    *     <schema>a/directory/holding/xsds</schema>
    *   </schemas>
    * </configuration>
-   * }</pre></blockquote>
+   * }
+   * </pre>
    */
   @FilterParameter(FilterType.URL)
   @Parameter(property="schemas", required=true)
@@ -270,22 +272,24 @@ public class JaxbMojo extends GeneratorMojo {
 
   /**
    * Parameter holding List of XJB Files and/or directories which should be
-   * recursively searched for XJB files. Only files or directories that
-   * actually exist will be included (in the case of files) or recursively
-   * searched for XJB files to include (in the case of directories). JAXB
-   * binding files are used to configure parts of the Java source generation.
-   * Supply the configuration using the standard Maven structure for
-   * configuring plugin Lists:
+   * recursively searched for XJB files. Only files or directories that actually
+   * exist will be included (in the case of files) or recursively searched for
+   * XJB files to include (in the case of directories). JAXB binding files are
+   * used to configure parts of the Java source generation. Supply the
+   * configuration using the standard Maven structure for configuring plugin
+   * Lists:
    *
-   * <blockquote><pre>
-   * {@code <configuration>
+   * <pre>
+   * {@code
+   * <configuration>
    *   ...
    *   <xjbs>
    *     <xjb>bindings/aBindingConfiguration.xjb</xjb>
    *     <xjb>bindings/config/directory</xjb>
    *   </xjbs>
    * </configuration>
-   * }</pre></blockquote>
+   * }
+   * </pre>
    */
   @FilterParameter(FilterType.URL)
   @Parameter(property="bindings")
