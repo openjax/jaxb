@@ -18,7 +18,6 @@ package org.openjax.jaxb.xjc;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.util.LinkedHashSet;
 
 import javax.xml.bind.JAXBException;
@@ -30,7 +29,7 @@ public class XJCompilerTest {
   @Test
   public void test() throws IOException, JAXBException {
     final XJCompiler.Command command = new XJCompiler.Command();
-    command.setSchemas(CollectionUtil.asCollection(new LinkedHashSet<URL>(), getClass().getResource("/test.xsd")));
+    command.setSchemas(CollectionUtil.asCollection(new LinkedHashSet<>(), getClass().getResource("/test.xsd")));
     command.setDestDir(new File("target/generated-test-sources/jaxb"));
     command.setExtension(true);
     XJCompiler.compile(command);

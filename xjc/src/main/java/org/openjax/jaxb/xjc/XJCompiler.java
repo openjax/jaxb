@@ -56,33 +56,48 @@ import com.sun.tools.xjc.XJCFacade;
 
 import japa.parser.ast.Node;
 
-public class XJCompiler {
-  public static class Command {
-    private boolean debug = false;
+public final class XJCompiler {
+  private XJCompiler() {
+  }
 
-    /** If true, the @SuppressWarnings annotation will be added to all generated classes */
+  public static class Command {
+    private boolean debug;
+
+    /**
+     * If true, the @SuppressWarnings annotation will be added to all generated
+     * classes
+     */
     private boolean suppressWarnings = true;
 
     /** Generated files will be in read-only mode. */
-    private boolean readOnly = false;
+    private boolean readOnly;
 
     /** Suppress generation of a file header with timestamp. */
-    private boolean noHeader = false;
+    private boolean noHeader;
 
     /** Generates code that works around issues specific to 1.4 runtime. */
-    private boolean explicitAnnotation = false;
+    private boolean explicitAnnotation;
 
-    /** If true, XML security features when parsing XML documents will be disabled. The default value is {@code false}. */
-    private boolean disableXmlSecurity = false;
+    /**
+     * If true, XML security features when parsing XML documents will be
+     * disabled. The default value is {@code false}.
+     */
+    private boolean disableXmlSecurity;
 
-    /** When on, generates content property for types with multiple xs:any derived elements (which is supposed to be correct behavior). */
-    private boolean contentForWildcard = false;
+    /**
+     * When on, generates content property for types with multiple xs:any
+     * derived elements (which is supposed to be correct behavior).
+     */
+    private boolean contentForWildcard;
 
-    /** If true, try to resolve name conflicts automatically by assigning mechanical numbers. */
-    private boolean autoNameResolution = false;
+    /**
+     * If true, try to resolve name conflicts automatically by assigning
+     * mechanical numbers.
+     */
+    private boolean autoNameResolution;
 
     /** This allocator has the final say on deciding the class name. */
-    private boolean testClassNameAllocator = false;
+    private boolean testClassNameAllocator;
 
     /** Java module name in {@code module-info.java}. */
     private String javaModule;
@@ -94,8 +109,9 @@ public class XJCompiler {
     private String httpProxy;
 
     // Corresponding XJC parameter: mark-generated.
-    // This feature causes all of the generated code to have @Generated annotation.
-    private boolean addGeneratedAnnotation = false;
+    // This feature causes all of the generated code to have @Generated
+    // annotation.
+    private boolean addGeneratedAnnotation;
 
     // Corresponding XJC parameter: catalog.
     // Specify catalog files to resolve external entity references. Supports
@@ -128,23 +144,24 @@ public class XJCompiler {
     //
     // By default, the XJC binding compiler strictly enforces the rules outlined
     // in the Compatibility chapter of the JAXB Specification. Appendix E.2
-    // defines a set of W3C XML Schema features that are not completely supported
+    // defines a set of W3C XML Schema features that are not completely
+    // supported
     // by JAXB v1.0. In some cases, you may be allowed to use them in the
     // '-extension' mode enabled by this switch. In the default (strict) mode,
     // you are also limited to using only the binding customizations defined in
     // the specification.
-    private boolean extension = false;
+    private boolean extension;
 
     // Corresponding XJC parameter: episode.
     //
-    // Generate an episode file from this compilation, so that other schemas that
-    // rely on this schema can be compiled later and rely on classes that are
-    // generated from this compilation. The generated episode file is really just
-    // a JAXB customization file (but with vendor extensions.)
+    // Generate an episode file from this compilation, so that other schemas
+    // that rely on this schema can be compiled later and rely on classes that
+    // are generated from this compilation. The generated episode file is
+    // really just a JAXB customization file (but with vendor extensions.)
     //
     // If this parameter is true, the episode file generated is called
     // META-INF/sun-jaxb.episode, and included in the artifact.
-    private boolean generateEpisode = false;
+    private boolean generateEpisode;
 
     // Corresponding XJC parameter: nv.
     //
@@ -153,20 +170,20 @@ public class XJCompiler {
     // schema validation. This does not mean that the binding compiler will not
     // perform any validation, it simply means that it will perform less-strict
     // validation.
-    private boolean laxSchemaValidation = false;
+    private boolean laxSchemaValidation;
 
     // Corresponding XJC parameter: no-header.
     //
     // Suppress the generation of a file header comment that includes some note
     // and timestamp. Using this makes the generated code more diff-friendly.
-    private boolean noGeneratedHeaderComments = false;
+    private boolean noGeneratedHeaderComments;
 
     // Corresponding XJC parameter: npa.
     //
     // Suppress the generation of package level annotations into
     // package-info.java. Using this switch causes the generated code to
     // internalize those annotations into the other generated classes.
-    private boolean noPackageLevelAnnotations = false;
+    private boolean noPackageLevelAnnotations;
 
     // Corresponding XJC parameter: d.
     //
@@ -184,13 +201,13 @@ public class XJCompiler {
 
     // Corresponding XJC parameter: quiet.
     // Suppress compiler output, such as progress information and warnings.
-    private boolean quiet = false;
+    private boolean quiet;
 
     // Parameter holding List of XSD paths to files and/or directories which
     // should be recursively searched for XSD files. Only files or directories
-    // that actually exist will be included (in the case of files) or recursively
-    // searched for XSD files to include (in the case of directories). Configure
-    // using standard Maven structure for Lists:
+    // that actually exist will be included (in the case of files) or
+    // recursively searched for XSD files to include (in the case of
+    // directories). Configure using standard Maven structure for Lists:
     //
     // <configuration>
     // ...
@@ -222,7 +239,8 @@ public class XJCompiler {
     // JAXB2 maven plugin, all source files are assumed to have the same type of
     // content.
     //
-    // This parameter replaces the previous multiple-choice boolean configuration
+    // This parameter replaces the previous multiple-choice boolean
+    // configuration
     // options for the jaxb2-maven-plugin (i.e. dtd, xmlschema, wsdl), and
     // corresponds to setting one of those flags as an XJC argument.
     private SourceType sourceType;
@@ -254,7 +272,7 @@ public class XJCompiler {
     // Tells XJC to be extra verbose, such as printing informational messages or
     // displaying stack traces.
     // User property: xjc.verbose
-    private boolean verbose = false;
+    private boolean verbose;
 
     // Parameter holding List of XJB Files and/or directories which should be
     // recursively searched for XJB files. Only files or directories that
@@ -278,7 +296,9 @@ public class XJCompiler {
     public Command() {
       classpath = new LinkedHashSet<>();
       try {
-        for (final Class<?> cls : new Class<?>[] {MaskingClassLoader.class, JAXBContext.class, AnnotatePlugin.class, AbstractParameterizablePlugin.class, LogFactory.class, XAnnotationParser.class, Node.class, DataSource.class, StringUtils.class})
+        for (final Class<?> cls : new Class<?>[] {
+          MaskingClassLoader.class, JAXBContext.class, AnnotatePlugin.class, AbstractParameterizablePlugin.class, LogFactory.class, XAnnotationParser.class, Node.class, DataSource.class, StringUtils.class
+        })
           if (cls.getProtectionDomain().getCodeSource() != null)
             classpath.add(new File(cls.getProtectionDomain().getCodeSource().getLocation().toURI()));
 
@@ -544,8 +564,9 @@ public class XJCompiler {
 
   private static final Logger logger = LoggerFactory.getLogger(XJCompiler.class);
   // FIXME: Embedded mode breaks in jaxdb/sqlx when calling:
-  // FIXME: mvn org.openjax.jaxb:jaxb-maven-plugin:0.8.1-SNAPSHOT:xjc@jaxb-test-generate
-  private static boolean embedded = false;
+  // FIXME: mvn
+  // org.openjax.jaxb:jaxb-maven-plugin:0.8.1-SNAPSHOT:xjc@jaxb-test-generate
+  private static final boolean embedded = false;
 
   public static void compile(final Command command) throws IOException, JAXBException {
     if (command.getSchemas() == null || command.getSchemas().size() == 0)
@@ -605,7 +626,7 @@ public class XJCompiler {
 
     if (command.getCatalog() != null) {
       System.setProperty("xml.catalog.ignoreMissing", "true");
-//      args.add(1, "-Dxml.catalog.ignoreMissing");
+      // args.add(1, "-Dxml.catalog.ignoreMissing");
       args.add("-catalog");
       args.add(URLs.fromURI(command.getCatalog().toURI()).toString());
     }
@@ -656,12 +677,15 @@ public class XJCompiler {
       if (!command.getDestDir().exists() && !command.getDestDir().mkdirs())
         throw new JAXBException("Unable to create output directory " + command.getDestDir().getAbsolutePath());
 
-      // FIXME: This does not work because the files that are written are only known by xjc, so I cannot
+      // FIXME: This does not work because the files that are written are only
+      // known by xjc, so I cannot
       // FIXME: stop this generator from overwriting them if overwrite=false
-//        else if (command.isOverwrite()) {
-//          for (final File file : command.getDestDir().listFiles())
-//            Files.walk(file.toPath()).map(Path::toFile).filter(a -> a.getName().endsWith(".java")).sorted((o1, o2) -> o2.compareTo(o1)).forEach(File::delete);
-//        }
+      // else if (command.isOverwrite()) {
+      // for (final File file : command.getDestDir().listFiles())
+      // Files.walk(file.toPath()).map(Path::toFile).filter(a ->
+      // a.getName().endsWith(".java")).sorted((o1, o2) ->
+      // o2.compareTo(o1)).forEach(File::delete);
+      // }
     }
 
     for (final URL schema : command.getSchemas()) {
@@ -755,20 +779,16 @@ public class XJCompiler {
       }
 
       if (command.getSuppressWarnings()) {
-        Files
-          .walk(command.getDestDir().toPath())
-          .filter(p -> p.getFileName().toString().endsWith(".java"))
-          .map(Path::toFile)
-          .forEach(Throwing.rethrow(XJCompiler::insertSuppressWarnings));
+        Files.walk(command.getDestDir().toPath()).filter(p -> p.getFileName().toString().endsWith(".java")).map(Path::toFile).forEach(Throwing.rethrow(XJCompiler::insertSuppressWarnings));
       }
     }
     catch (final IOException e) {
       throw e;
     }
+    catch (final ExitPolicyException t) {
+      throw new JAXBException(t.getMessage(), t);
+    }
     catch (final Throwable t) {
-      if (!(t instanceof ExitPolicyException))
-        throw new JAXBException(t.getMessage(), t);
-
       securityManager.disable();
       if (((ExitPolicyException)t).exitCode != 0) {
         throw new JAXBException(CollectionUtil.toString(embedded ? addJavaArgs(args, true) : args, " "));
@@ -793,7 +813,7 @@ public class XJCompiler {
           long p = raf.getFilePointer() - line.length() - 1;
           raf.seek(p);
           while (true) {
-            int l2 = raf.read(b2);
+            final int l2 = raf.read(b2);
             raf.seek(p);
             if (l1 == -1)
               return;
@@ -828,7 +848,7 @@ public class XJCompiler {
     return args;
   }
 
-  private static class ExitPolicyException extends SecurityException {
+  private static final class ExitPolicyException extends SecurityException {
     private static final long serialVersionUID = 8756682857129876527L;
     private final int exitCode;
 
@@ -837,11 +857,11 @@ public class XJCompiler {
     }
   }
 
-  private static class MySecurityManager extends SecurityManager {
+  private static final class MySecurityManager extends SecurityManager {
     private final SecurityManager securityManager;
     private boolean enabled = true;
 
-    public MySecurityManager(final SecurityManager securityManager) {
+    private MySecurityManager(final SecurityManager securityManager) {
       this.securityManager = securityManager;
     }
 
