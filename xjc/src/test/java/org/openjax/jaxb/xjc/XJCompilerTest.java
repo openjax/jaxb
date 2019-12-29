@@ -18,6 +18,7 @@ package org.openjax.jaxb.xjc;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.LinkedHashSet;
 
 import javax.xml.bind.JAXBException;
@@ -27,9 +28,9 @@ import org.libj.util.CollectionUtil;
 
 public class XJCompilerTest {
   @Test
-  public void test() throws IOException, JAXBException {
+  public void test() throws IOException, JAXBException, URISyntaxException {
     final XJCompiler.Command command = new XJCompiler.Command();
-    command.setSchemas(CollectionUtil.asCollection(new LinkedHashSet<>(), getClass().getResource("/test.xsd")));
+    command.setSchemas(CollectionUtil.asCollection(new LinkedHashSet<>(), getClass().getResource("/test.xsd").toURI()));
     command.setDestDir(new File("target/generated-test-sources/jaxb"));
     command.setExtension(true);
     XJCompiler.compile(command);

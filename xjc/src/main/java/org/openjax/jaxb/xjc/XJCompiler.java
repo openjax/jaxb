@@ -22,8 +22,8 @@ import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
+import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.Permission;
@@ -44,7 +44,7 @@ import org.jvnet.jaxb2_commons.plugin.AbstractParameterizablePlugin;
 import org.jvnet.jaxb2_commons.plugin.annotate.AnnotatePlugin;
 import org.libj.exec.Processes;
 import org.libj.io.Streams;
-import org.libj.net.URLs;
+import org.libj.net.URIs;
 import org.libj.util.ClassLoaders;
 import org.libj.util.CollectionUtil;
 import org.libj.util.function.Throwing;
@@ -217,7 +217,7 @@ public final class XJCompiler {
     // <schema>a/directory/holding/xsds</schema>
     // </schemas>
     // </configuration>
-    private LinkedHashSet<URL> schemas;
+    private LinkedHashSet<URI> schemas;
 
     public enum SourceType {
       DTD("dtd"),
@@ -289,7 +289,7 @@ public final class XJCompiler {
     // <xjbSource>bindings/config/directory</xjbSource>
     // </xjbSources>
     // </configuration>
-    private LinkedHashSet<URL> xjbs;
+    private LinkedHashSet<URI> xjbs;
 
     private final LinkedHashSet<File> classpath;
 
@@ -509,11 +509,11 @@ public final class XJCompiler {
       this.quiet = quiet;
     }
 
-    public LinkedHashSet<URL> getSchemas() {
+    public LinkedHashSet<URI> getSchemas() {
       return this.schemas;
     }
 
-    public void setSchemas(final LinkedHashSet<URL> schemas) {
+    public void setSchemas(final LinkedHashSet<URI> schemas) {
       this.schemas = schemas;
     }
 
@@ -541,11 +541,11 @@ public final class XJCompiler {
       this.verbose = verbose;
     }
 
-    public LinkedHashSet<URL> getXJBs() {
+    public LinkedHashSet<URI> getXJBs() {
       return this.xjbs;
     }
 
-    public void setXJBs(final LinkedHashSet<URL> xjbs) {
+    public void setXJBs(final LinkedHashSet<URI> xjbs) {
       this.xjbs = xjbs;
     }
 
@@ -628,7 +628,7 @@ public final class XJCompiler {
       System.setProperty("xml.catalog.ignoreMissing", "true");
       // args.add(1, "-Dxml.catalog.ignoreMissing");
       args.add("-catalog");
-      args.add(URLs.fromURI(command.getCatalog().toURI()).toString());
+      args.add(command.getCatalog().toURI().toString());
     }
 
     if (command.getEnableIntrospection())
@@ -688,37 +688,37 @@ public final class XJCompiler {
       // }
     }
 
-    for (final URL schema : command.getSchemas()) {
-      if (URLs.isLocalFile(schema)) {
-        final File file = new File(schema.getFile());
+    for (final URI schema : command.getSchemas()) {
+      if (URIs.isLocalFile(schema)) {
+        final File file = new File(schema.getPath());
         if (!file.exists())
           throw new FileNotFoundException(file.getAbsolutePath());
 
         args.add(file.getAbsolutePath());
       }
       else {
-        final File file = File.createTempFile(URLs.getName(schema), "");
+        final File file = File.createTempFile(URIs.getName(schema), "");
         args.add(file.getAbsolutePath());
         file.deleteOnExit();
-        try (final InputStream in = schema.openStream()) {
+        try (final InputStream in = schema.toURL().openStream()) {
           Files.write(file.toPath(), Streams.readBytes(in));
         }
       }
 
-      args.add(schema.getFile());
+      args.add(schema.getPath());
     }
 
     if (command.getXJBs() != null) {
-      for (final URL xjb : command.getXJBs()) {
+      for (final URI xjb : command.getXJBs()) {
         args.add("-b");
-        if (URLs.isLocalFile(xjb)) {
-          args.add(xjb.getFile());
+        if (URIs.isLocalFile(xjb)) {
+          args.add(xjb.getPath());
         }
         else {
-          final File file = File.createTempFile(URLs.getName(xjb), "");
+          final File file = File.createTempFile(URIs.getName(xjb), "");
           args.add(file.getAbsolutePath());
           file.deleteOnExit();
-          try (final InputStream in = xjb.openStream()) {
+          try (final InputStream in = xjb.toURL().openStream()) {
             Files.write(file.toPath(), Streams.readBytes(in));
           }
         }
@@ -782,13 +782,13 @@ public final class XJCompiler {
         Files.walk(command.getDestDir().toPath()).filter(p -> p.getFileName().toString().endsWith(".java")).map(Path::toFile).forEach(Throwing.rethrow(XJCompiler::insertSuppressWarnings));
       }
     }
-    catch (final IOException e) {
+    catch (final IOException | JAXBException e) {
       throw e;
     }
-    catch (final ExitPolicyException t) {
-      throw new JAXBException(t.getMessage(), t);
-    }
     catch (final Throwable t) {
+      if (!(t instanceof ExitPolicyException))
+        throw new JAXBException(t.getMessage(), t);
+
       securityManager.disable();
       if (((ExitPolicyException)t).exitCode != 0) {
         throw new JAXBException(CollectionUtil.toString(embedded ? addJavaArgs(args, true) : args, " "));

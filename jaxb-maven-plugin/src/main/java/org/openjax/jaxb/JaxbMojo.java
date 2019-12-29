@@ -18,6 +18,7 @@ package org.openjax.jaxb;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.net.URI;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
@@ -38,7 +39,6 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
-import org.libj.net.URLs;
 import org.openjax.jaxb.xjc.XJCompiler;
 import org.openjax.maven.mojo.FilterParameter;
 import org.openjax.maven.mojo.FilterType;
@@ -340,20 +340,20 @@ public class JaxbMojo extends GeneratorMojo {
       if (catalog != null)
         Files.copy(catalog.toPath(), masterCatalog.toPath(), StandardCopyOption.REPLACE_EXISTING);
 
-      final LinkedHashSet<URL> urls = new LinkedHashSet<>();
+      final LinkedHashSet<URI> uris = new LinkedHashSet<>();
       try (final FileWriter out = new FileWriter(masterCatalog)) {
         for (final String schema : new LinkedHashSet<>(schemas)) {
           final URL url = new URL(schema);
-          urls.add(url);
+          uris.add(url.toURI());
           out.write(XmlPreviewParser.parse(url).getCatalog().toTR9401());
         }
       }
 
       command.setCatalog(masterCatalog);
 
-      command.setSchemas(urls);
+      command.setSchemas(uris);
       if (bindings != null && bindings.size() > 0)
-        command.setXJBs(new LinkedHashSet<>(bindings).stream().map(URLs::create).collect(Collectors.toCollection(LinkedHashSet::new)));
+        command.setXJBs(new LinkedHashSet<>(bindings).stream().map(URI::create).collect(Collectors.toCollection(LinkedHashSet::new)));
 
       command.addClasspath(MojoUtil.getExecutionClasspath(project, execution, (PluginDescriptor)this.getPluginContext().get("pluginDescriptor"), localRepository, artifactHandler));
       XJCompiler.compile(command);
@@ -365,7 +365,7 @@ public class JaxbMojo extends GeneratorMojo {
       throw new MojoFailureException(e.getClass().getSimpleName() + ": " + e.getMessage(), e);
     }
     finally {
-      if (!command.getDebug())
+      if (!command.getDebug() && masterCatalog != null)
         masterCatalog.delete();
     }
   }
