@@ -1,6 +1,6 @@
 # Changes by Version
 
-## [v0.8.3](https://github.com/openjax/jaxb/compare/4e087a9348de088cb224df12437d4261a09689da..HEAD) (2020-05-23)
+## [v0.8.5](https://github.com/openjax/jaxb/compare/4e087a9348de088cb224df12437d4261a09689da..HEAD) (2020-05-23)
 * Upgrade `org.apache.maven` dependencies from `v3.6.1` to `v3.6.2`.
 * Upgrade to latest changes in `org.openjax:maven` APIs.
 * Improve javadocs.
