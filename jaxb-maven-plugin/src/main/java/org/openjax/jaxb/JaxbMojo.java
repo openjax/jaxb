@@ -30,7 +30,6 @@ import javax.xml.bind.JAXBException;
 
 import org.apache.maven.artifact.handler.ArtifactHandler;
 import org.apache.maven.artifact.handler.DefaultArtifactHandler;
-import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.descriptor.PluginDescriptor;
@@ -295,9 +294,6 @@ public class JaxbMojo extends GeneratorMojo {
   @Parameter(property="bindings")
   private List<String> bindings;
 
-  @Parameter(defaultValue="${localRepository}")
-  private ArtifactRepository localRepository;
-
   private static final ArtifactHandler artifactHandler = new DefaultArtifactHandler("jar");
 
   @Override
@@ -355,7 +351,7 @@ public class JaxbMojo extends GeneratorMojo {
       if (bindings != null && bindings.size() > 0)
         command.setXJBs(new LinkedHashSet<>(bindings).stream().map(URI::create).collect(Collectors.toCollection(LinkedHashSet::new)));
 
-      command.addClasspath(MojoUtil.getExecutionClasspath(project, execution, (PluginDescriptor)this.getPluginContext().get("pluginDescriptor"), localRepository, artifactHandler));
+      command.addClasspath(MojoUtil.getExecutionClasspath(project, execution, (PluginDescriptor)this.getPluginContext().get("pluginDescriptor"), session.getLocalRepository(), artifactHandler));
       XJCompiler.compile(command);
     }
     catch (final JAXBException e) {
