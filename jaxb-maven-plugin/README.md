@@ -1,6 +1,6 @@
 # JAXB Maven Plugin
 
-[![Build Status](https://travis-ic.org/openjax/jaxb.svg?branch=master)](https://travis-ic.org/openjax/jaxb)
+[![Build Status](https://github.com/openjax/jaxb/workflows/build.yml/badge.svg)](https://github.com/openjax/jaxb/actions/workflows/build.yml)
 [![Coverage Status](https://coveralls.io/repos/github/openjax/jaxb/badge.svg)](https://coveralls.io/github/openjax/jaxb)
 [![Javadocs](https://www.javadoc.io/badge/org.openjax.jaxb/jaxb-maven-plugin.svg)](https://www.javadoc.io/doc/org.openjax.jaxb/jaxb-maven-plugin)
 [![Released Version](https://img.shields.io/maven-central/v/org.openjax.jaxb/jaxb-maven-plugin.svg)](https://mvnrepository.com/artifact/org.openjax.jaxb/jaxb-maven-plugin)
