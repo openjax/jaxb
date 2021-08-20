@@ -37,6 +37,12 @@
     <module>jaxb-maven-plugin</module>
   </modules>
   <build>
+    <plugins>
+      <plugin>
+        <groupId>org.openjax.xml</groupId>
+        <artifactId>xml-maven-plugin</artifactId>
+      </plugin>
+    </plugins>
     <pluginManagement>
       <plugins>
         <plugin>

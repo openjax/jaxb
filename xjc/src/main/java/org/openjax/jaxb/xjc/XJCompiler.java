@@ -17,13 +17,13 @@
 package org.openjax.jaxb.xjc;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FilterOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.RandomAccessFile;
+import java.io.UncheckedIOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.Permission;
@@ -36,6 +36,7 @@ import java.util.List;
 import javax.activation.DataSource;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import javax.xml.transform.TransformerException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.LogFactory;
@@ -43,11 +44,12 @@ import org.jvnet.annox.parser.XAnnotationParser;
 import org.jvnet.jaxb2_commons.plugin.AbstractParameterizablePlugin;
 import org.jvnet.jaxb2_commons.plugin.annotate.AnnotatePlugin;
 import org.libj.exec.Processes;
-import org.libj.io.Streams;
 import org.libj.net.URIs;
+import org.libj.net.URLs;
 import org.libj.util.ClassLoaders;
 import org.libj.util.CollectionUtil;
 import org.libj.util.function.Throwing;
+import org.openjax.xml.transform.Transformer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -564,8 +566,7 @@ public final class XJCompiler {
 
   private static final Logger logger = LoggerFactory.getLogger(XJCompiler.class);
   // FIXME: Embedded mode breaks in jaxdb/sqlx when calling:
-  // FIXME: mvn
-  // org.openjax.jaxb:jaxb-maven-plugin:0.8.1-SNAPSHOT:xjc@jaxb-test-generate
+  // FIXME: mvn org.openjax.jaxb:jaxb-maven-plugin:0.8.1-SNAPSHOT:xjc@jaxb-test-generate
   private static final boolean embedded = false;
 
   public static void compile(final Command command) throws IOException, JAXBException {
@@ -677,8 +678,7 @@ public final class XJCompiler {
       if (!command.getDestDir().exists() && !command.getDestDir().mkdirs())
         throw new JAXBException("Unable to create output directory " + command.getDestDir().getAbsolutePath());
 
-      // FIXME: This does not work because the files that are written are only
-      // known by xjc, so I cannot
+      // FIXME: This does not work because the files that are written are only known by xjc, so I cannot
       // FIXME: stop this generator from overwriting them if overwrite=false
       // else if (command.isOverwrite()) {
       // for (final File file : command.getDestDir().listFiles())
@@ -688,24 +688,21 @@ public final class XJCompiler {
       // }
     }
 
-    for (final URI schema : command.getSchemas()) {
-      if (URIs.isLocalFile(schema)) {
-        final File file = new File(schema.getPath());
-        if (!file.exists())
-          throw new FileNotFoundException(file.getAbsolutePath());
-
-        args.add(file.getAbsolutePath());
-      }
-      else {
+    final List<File> tempFiles = new ArrayList<>();
+    try {
+      final URL xsd11to10 = Thread.currentThread().getContextClassLoader().getResource("xsd-1.1-to-1.0.xsl");
+      for (final URI schema : command.getSchemas()) {
         final File file = File.createTempFile(URIs.getName(schema), "");
         args.add(file.getAbsolutePath());
-        file.deleteOnExit();
-        try (final InputStream in = schema.toURL().openStream()) {
-          Files.write(file.toPath(), Streams.readBytes(in));
-        }
+        tempFiles.add(file);
+        Transformer.transform(xsd11to10, schema.toURL(), file);
       }
-
-      args.add(schema.getPath());
+    }
+    catch (final IOException e) {
+      throw new UncheckedIOException(e);
+    }
+    catch (final TransformerException e) {
+      throw new RuntimeException(e);
     }
 
     if (command.getXJBs() != null) {
@@ -717,10 +714,8 @@ public final class XJCompiler {
         else {
           final File file = File.createTempFile(URIs.getName(xjb), "");
           args.add(file.getAbsolutePath());
-          file.deleteOnExit();
-          try (final InputStream in = xjb.toURL().openStream()) {
-            Files.write(file.toPath(), Streams.readBytes(in));
-          }
+          tempFiles.add(file);
+          Files.write(file.toPath(), URLs.readBytes(xjb.toURL()));
         }
       }
     }
@@ -781,6 +776,9 @@ public final class XJCompiler {
       if (command.getSuppressWarnings()) {
         Files.walk(command.getDestDir().toPath()).filter(p -> p.getFileName().toString().endsWith(".java")).map(Path::toFile).forEach(Throwing.rethrow(XJCompiler::insertSuppressWarnings));
       }
+
+      for (final File tempFile : tempFiles)
+        tempFile.delete();
     }
     catch (final IOException | JAXBException e) {
       throw e;

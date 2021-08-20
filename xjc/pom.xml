@@ -47,7 +47,17 @@
     </dependency>
     <dependency>
       <groupId>org.openjax.xml</groupId>
+      <artifactId>api</artifactId>
+      <version>0.9.5-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openjax.xml</groupId>
       <artifactId>sax</artifactId>
+      <version>0.9.5-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openjax.xml</groupId>
+      <artifactId>transform</artifactId>
       <version>0.9.5-SNAPSHOT</version>
     </dependency>
     <dependency>
