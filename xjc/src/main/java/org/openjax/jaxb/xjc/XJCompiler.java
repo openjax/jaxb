@@ -847,7 +847,6 @@ public final class XJCompiler {
   }
 
   private static final class ExitPolicyException extends SecurityException {
-    private static final long serialVersionUID = 8756682857129876527L;
     private final int exitCode;
 
     private ExitPolicyException(final int exitCode) {
