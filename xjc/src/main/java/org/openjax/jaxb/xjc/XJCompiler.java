@@ -569,6 +569,7 @@ public final class XJCompiler {
   // FIXME: mvn org.openjax.jaxb:jaxb-maven-plugin:0.8.1-SNAPSHOT:xjc@jaxb-test-generate
   private static final boolean embedded = false;
 
+  @SuppressWarnings("removal")
   public static void compile(final Command command) throws IOException, JAXBException {
     if (command.getSchemas() == null || command.getSchemas().size() == 0)
       return;
@@ -854,6 +855,7 @@ public final class XJCompiler {
     }
   }
 
+  @SuppressWarnings({"deprecation", "removal"})
   private static final class MySecurityManager extends SecurityManager {
     private final SecurityManager securityManager;
     private boolean enabled = true;
