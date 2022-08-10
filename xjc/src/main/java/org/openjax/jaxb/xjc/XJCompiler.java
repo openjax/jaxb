@@ -295,12 +295,12 @@ public final class XJCompiler {
 
     private final LinkedHashSet<File> classpath;
 
+    private static final Class<?>[] classes = {MaskingClassLoader.class, JAXBContext.class, AnnotatePlugin.class, AbstractParameterizablePlugin.class, LogFactory.class, XAnnotationParser.class, Node.class, DataSource.class, StringUtils.class};
+
     public Command() {
       classpath = new LinkedHashSet<>();
       try {
-        for (final Class<?> cls : new Class<?>[] {
-          MaskingClassLoader.class, JAXBContext.class, AnnotatePlugin.class, AbstractParameterizablePlugin.class, LogFactory.class, XAnnotationParser.class, Node.class, DataSource.class, StringUtils.class
-        })
+        for (final Class<?> cls : classes) // [A]
           if (cls.getProtectionDomain().getCodeSource() != null)
             classpath.add(new File(cls.getProtectionDomain().getCodeSource().getLocation().toURI()));
 
@@ -578,7 +578,7 @@ public final class XJCompiler {
     if (command.classpath.size() > 0) {
       args.add("-cp");
       final StringBuilder cp = new StringBuilder();
-      for (final File path : command.classpath)
+      for (final File path : command.classpath) // [S]
         cp.append(File.pathSeparator).append(path.getAbsolutePath());
 
       args.add(cp.substring(1));
@@ -682,17 +682,17 @@ public final class XJCompiler {
       // FIXME: This does not work because the files that are written are only known by xjc, so I cannot
       // FIXME: stop this generator from overwriting them if overwrite=false
       // else if (command.isOverwrite()) {
-      // for (final File file : command.getDestDir().listFiles())
+      // for (final File file : command.getDestDir().listFiles()) // [?]
       // Files.walk(file.toPath()).map(Path::toFile).filter(a ->
       // a.getName().endsWith(".java")).sorted((o1, o2) ->
       // o2.compareTo(o1)).forEach(File::delete);
       // }
     }
 
-    final List<File> tempFiles = new ArrayList<>();
+    final ArrayList<File> tempFiles = new ArrayList<>();
     try {
       final URL xsd11to10 = Thread.currentThread().getContextClassLoader().getResource("xsd-1.1-to-1.0.xsl");
-      for (final URI schema : command.getSchemas()) {
+      for (final URI schema : command.getSchemas()) { // [S]
         final File file = File.createTempFile(URIs.getName(schema), "");
         args.add(file.getAbsolutePath());
         tempFiles.add(file);
@@ -707,7 +707,7 @@ public final class XJCompiler {
     }
 
     if (command.getXJBs() != null) {
-      for (final URI xjb : command.getXJBs()) {
+      for (final URI xjb : command.getXJBs()) { // [S]
         args.add("-b");
         if (URIs.isLocalFile(xjb)) {
           args.add(xjb.getPath());
@@ -778,8 +778,8 @@ public final class XJCompiler {
         Files.walk(command.getDestDir().toPath()).filter(p -> p.getFileName().toString().endsWith(".java")).map(Path::toFile).forEach(Throwing.rethrow(XJCompiler::insertSuppressWarnings));
       }
 
-      for (final File tempFile : tempFiles)
-        tempFile.delete();
+      for (int i = 0, i$ = tempFiles.size(); i < i$; ++i) // [RA]
+        tempFiles.get(i).delete();
     }
     catch (final IOException | JAXBException e) {
       throw e;
@@ -803,7 +803,7 @@ public final class XJCompiler {
     final byte[] b2 = new byte[b1.length];
 
     try (final RandomAccessFile raf = new RandomAccessFile(file, "rw")) {
-      for (String line; (line = raf.readLine()) != null;) {
+      for (String line; (line = raf.readLine()) != null;) { // [X]
         if (line.regionMatches(0, insert, 0, insert.length() - 1))
           return;
 
