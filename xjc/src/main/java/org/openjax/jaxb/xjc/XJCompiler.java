@@ -66,8 +66,7 @@ public final class XJCompiler {
     private boolean debug;
 
     /**
-     * If true, the @SuppressWarnings annotation will be added to all generated
-     * classes
+     * If true, the @SuppressWarnings annotation will be added to all generated classes
      */
     private boolean suppressWarnings = true;
 
@@ -81,20 +80,18 @@ public final class XJCompiler {
     private boolean explicitAnnotation;
 
     /**
-     * If true, XML security features when parsing XML documents will be
-     * disabled. The default value is {@code false}.
+     * If true, XML security features when parsing XML documents will be disabled. The default value is {@code false}.
      */
     private boolean disableXmlSecurity;
 
     /**
-     * When on, generates content property for types with multiple xs:any
-     * derived elements (which is supposed to be correct behavior).
+     * When on, generates content property for types with multiple xs:any derived elements (which is supposed to be correct
+     * behavior).
      */
     private boolean contentForWildcard;
 
     /**
-     * If true, try to resolve name conflicts automatically by assigning
-     * mechanical numbers.
+     * If true, try to resolve name conflicts automatically by assigning mechanical numbers.
      */
     private boolean autoNameResolution;
 

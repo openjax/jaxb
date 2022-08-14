@@ -46,8 +46,7 @@ import org.openjax.maven.mojo.MojoUtil;
 import org.openjax.xml.sax.XmlPreviewParser;
 
 /**
- * Mojo that creates compile-scope Java source or binaries from XML schema(s) by
- * invoking the JAXB XJC binding compiler.
+ * Mojo that creates compile-scope Java source or binaries from XML schema(s) by invoking the JAXB XJC binding compiler.
  */
 @Mojo(name="xjc", defaultPhase=LifecyclePhase.GENERATE_SOURCES, requiresDependencyResolution=ResolutionScope.TEST)
 @Execute(goal="xjc")
@@ -72,7 +71,9 @@ public class JaxbMojo extends GeneratorMojo {
   @Parameter(property="disableXmlSecurity")
   private boolean disableXmlSecurity = false;
 
-  /** When on, generates content property for types with multiple xs:any derived elements (which is supposed to be correct behavior). */
+  /**
+   * When on, generates content property for types with multiple xs:any derived elements (which is supposed to be correct behavior).
+   */
   @Parameter(property="contentForWildcard")
   private boolean contentForWildcard = false;
 
@@ -97,8 +98,7 @@ public class JaxbMojo extends GeneratorMojo {
   private String httpProxy;
 
   /**
-   * Corresponding XJC parameter: mark-generated.
-   * This feature causes all of the generated code to have @Generated annotation.
+   * Corresponding XJC parameter: mark-generated. This feature causes all of the generated code to have @Generated annotation.
    */
   @Parameter(property="addGeneratedAnnotation")
   private boolean addGeneratedAnnotation = false;
@@ -112,66 +112,44 @@ public class JaxbMojo extends GeneratorMojo {
   private File catalog;
 
   /**
-   * Corresponding XJC parameter: enableIntrospection.
-   * Enable correct generation of Boolean getters/setters to enable Bean
+   * Corresponding XJC parameter: enableIntrospection. Enable correct generation of Boolean getters/setters to enable Bean
    * Introspection APIs.
    */
   @Parameter(property="enableIntrospection")
   private boolean enableIntrospection = true;
 
   /**
-   * Defines the encoding used by XJC (for generating Java Source files) and
-   * schemagen (for generating XSDs). The corresponding argument parameter for
-   * XJC and SchemaGen is: encoding.
-   *
-   * The algorithm for finding the encoding to use is as follows (where the
-   * first non-null value found is used for encoding):
-   *
-   * 1. If the configuration property is explicitly given within the plugin's
-   *    configuration, use that value.
-   * 2. If the Maven property project.build.sourceEncoding is defined, use its
-   *    value.
-   * 3. Otherwise use the value from the system property file.encoding.
+   * Defines the encoding used by XJC (for generating Java Source files) and schemagen (for generating XSDs). The corresponding
+   * argument parameter for XJC and SchemaGen is: encoding. The algorithm for finding the encoding to use is as follows (where the
+   * first non-null value found is used for encoding): 1. If the configuration property is explicitly given within the plugin's
+   * configuration, use that value. 2. If the Maven property project.build.sourceEncoding is defined, use its value. 3. Otherwise
+   * use the value from the system property file.encoding.
    */
   @Parameter(property="encoding", defaultValue="${project.build.sourceEncoding}")
   private String encoding;
 
   /**
-   * Corresponding XJC parameter: extension.
-   *
-   * By default, the XJC binding compiler strictly enforces the rules outlined
-   * in the Compatibility chapter of the JAXB Specification. Appendix E.2
-   * defines a set of W3C XML Schema features that are not completely supported
-   * by JAXB v1.0. In some cases, you may be allowed to use them in the
-   * '-extension' mode enabled by this switch. In the default (strict) mode,
-   * you are also limited to using only the binding customizations defined in
-   * the specification.
+   * Corresponding XJC parameter: extension. By default, the XJC binding compiler strictly enforces the rules outlined in the
+   * Compatibility chapter of the JAXB Specification. Appendix E.2 defines a set of W3C XML Schema features that are not completely
+   * supported by JAXB v1.0. In some cases, you may be allowed to use them in the '-extension' mode enabled by this switch. In the
+   * default (strict) mode, you are also limited to using only the binding customizations defined in the specification.
    */
   @Parameter(property="extension")
   private boolean extension = false;
 
   /**
-   * Corresponding XJC parameter: episode.
-   *
-   * Generate an episode file from this compilation, so that other schemas that
-   * rely on this schema can be compiled later and rely on classes that are
-   * generated from this compilation. The generated episode file is really just
-   * a JAXB customization file (but with vendor extensions.)
-   *
-   * If this parameter is true, the episode file generated is called
+   * Corresponding XJC parameter: episode. Generate an episode file from this compilation, so that other schemas that rely on this
+   * schema can be compiled later and rely on classes that are generated from this compilation. The generated episode file is really
+   * just a JAXB customization file (but with vendor extensions.) If this parameter is true, the episode file generated is called
    * META-INF/sun-jaxb.episode, and included in the artifact.
    */
   @Parameter(property="generateEpisode")
   private boolean generateEpisode = false;
 
   /**
-   * Corresponding XJC parameter: nv.
-   *
-   * By default, the XJC binding compiler performs strict validation of the
-   * source schema before processing it. Use this option to disable strict
-   * schema validation. This does not mean that the binding compiler will not
-   * perform any validation, it simply means that it will perform less-strict
-   * validation.
+   * Corresponding XJC parameter: nv. By default, the XJC binding compiler performs strict validation of the source schema before
+   * processing it. Use this option to disable strict schema validation. This does not mean that the binding compiler will not
+   * perform any validation, it simply means that it will perform less-strict validation.
    */
   @Parameter(property="laxSchemaValidation")
   private boolean laxSchemaValidation = false;
@@ -186,71 +164,52 @@ public class JaxbMojo extends GeneratorMojo {
   private boolean noGeneratedHeaderComments = false;
 
   /**
-   * Corresponding XJC parameter: npa.
-   *
-   * Suppress the generation of package level annotations into
-   * package-info.java. Using this switch causes the generated code to
-   * internalize those annotations into the other generated classes.
+   * Corresponding XJC parameter: npa. Suppress the generation of package level annotations into package-info.java. Using this
+   * switch causes the generated code to internalize those annotations into the other generated classes.
    */
   @Parameter(property="noPackageLevelAnnotations")
   private boolean noPackageLevelAnnotations = false;
 
   /**
-   * Corresponding XJC parameter: p.
-   *
-   * The package under which the source files will be generated. Quoting the
-   * XJC documentation: 'Specifying a target package via this command-line
-   * option overrides any binding customization for package name and the
-   * default package name algorithm defined in the specification'.
+   * Corresponding XJC parameter: p. The package under which the source files will be generated. Quoting the XJC documentation:
+   * 'Specifying a target package via this command-line option overrides any binding customization for package name and the default
+   * package name algorithm defined in the specification'.
    */
   @Parameter(property="packageName")
   private String packageName;
 
   /**
-   * Corresponding XJC parameter: quiet.
-   * Suppress compiler output, such as progress information and warnings.
+   * Corresponding XJC parameter: quiet. Suppress compiler output, such as progress information and warnings.
    */
   @Parameter(property="quiet")
   private boolean quiet = false;
 
   /**
-   * Defines the content type of sources for the XJC. To simplify usage of the
-   * JAXB2 maven plugin, all source files are assumed to have the same type of
-   * content.
-   *
-   * This parameter replaces the previous multiple-choice boolean configuration
-   * options for the jaxb2-maven-plugin (i.e. dtd, xmlschema, wsdl), and
-   * corresponds to setting one of those flags as an XJC argument.
+   * Defines the content type of sources for the XJC. To simplify usage of the JAXB2 maven plugin, all source files are assumed to
+   * have the same type of content. This parameter replaces the previous multiple-choice boolean configuration options for the
+   * jaxb2-maven-plugin (i.e. dtd, xmlschema, wsdl), and corresponds to setting one of those flags as an XJC argument.
    */
   @Parameter(property="sourceType")
   private String sourceType = "xmlschema";
 
   /**
-   * Corresponding XJC parameter: target.
-   *
-   * Permitted values: '2.0' and '2.1'. Avoid generating code that relies on
-   * JAXB newer than the version given. This will allow the generated code to
-   * run with JAXB 2.0 runtime (such as JavaSE 6.).
+   * Corresponding XJC parameter: target. Permitted values: '2.0' and '2.1'. Avoid generating code that relies on JAXB newer than
+   * the version given. This will allow the generated code to run with JAXB 2.0 runtime (such as JavaSE 6.).
    */
   @Parameter(property="target")
   private String targetVersion;
 
   /**
-   * Corresponding XJC parameter: verbose.
-   *
-   * Tells XJC to be extra verbose, such as printing informational messages or
-   * displaying stack traces.
-   * User property: xjc.verbose
+   * Corresponding XJC parameter: verbose. Tells XJC to be extra verbose, such as printing informational messages or displaying
+   * stack traces. User property: xjc.verbose
    */
   @Parameter(property="verbose")
   private boolean verbose = false;
 
   /**
-   * Parameter holding List of XSD paths to files and/or directories which
-   * should be recursively searched for XSD files. Only files or directories
-   * that actually exist will be included (in the case of files) or recursively
-   * searched for XSD files to include (in the case of directories). Configure
-   * using standard Maven structure for Lists:
+   * Parameter holding List of XSD paths to files and/or directories which should be recursively searched for XSD files. Only files
+   * or directories that actually exist will be included (in the case of files) or recursively searched for XSD files to include (in
+   * the case of directories). Configure using standard Maven structure for Lists:
    *
    * <pre>
    * {@code
@@ -270,13 +229,10 @@ public class JaxbMojo extends GeneratorMojo {
   private List<String> schemas;
 
   /**
-   * Parameter holding List of XJB Files and/or directories which should be
-   * recursively searched for XJB files. Only files or directories that actually
-   * exist will be included (in the case of files) or recursively searched for
-   * XJB files to include (in the case of directories). JAXB binding files are
-   * used to configure parts of the Java source generation. Supply the
-   * configuration using the standard Maven structure for configuring plugin
-   * Lists:
+   * Parameter holding List of XJB Files and/or directories which should be recursively searched for XJB files. Only files or
+   * directories that actually exist will be included (in the case of files) or recursively searched for XJB files to include (in
+   * the case of directories). JAXB binding files are used to configure parts of the Java source generation. Supply the
+   * configuration using the standard Maven structure for configuring plugin Lists:
    *
    * <pre>
    * {@code
