@@ -294,10 +294,12 @@ public class JaxbMojo extends GeneratorMojo {
 
       final LinkedHashSet<URI> uris = new LinkedHashSet<>();
       try (final FileWriter out = new FileWriter(masterCatalog)) {
-        for (final String schema : new LinkedHashSet<>(schemas)) { // [S]
-          final URL url = new URL(schema);
-          uris.add(url.toURI());
-          out.write(XmlPreviewParser.parse(url).getCatalog().toTR9401());
+        if (schemas.size() > 0) {
+          for (final String schema : new LinkedHashSet<>(schemas)) { // [S]
+            final URL url = new URL(schema);
+            uris.add(url.toURI());
+            out.write(XmlPreviewParser.parse(url).getCatalog().toTR9401());
+          }
         }
       }
 

@@ -568,14 +568,16 @@ public final class XJCompiler {
 
   @SuppressWarnings("removal")
   public static void compile(final Command command) throws IOException, JAXBException {
-    if (command.getSchemas() == null || command.getSchemas().size() == 0)
+    final LinkedHashSet<URI> schemas = command.getSchemas();
+    if (schemas == null || schemas.size() == 0)
       return;
 
     final List<String> args = new ArrayList<>();
-    if (command.classpath.size() > 0) {
+    final LinkedHashSet<File> classpath = command.classpath;
+    if (classpath.size() > 0) {
       args.add("-cp");
       final StringBuilder cp = new StringBuilder();
-      for (final File path : command.classpath) // [S]
+      for (final File path : classpath) // [S]
         cp.append(File.pathSeparator).append(path.getAbsolutePath());
 
       args.add(cp.substring(1));
@@ -689,7 +691,7 @@ public final class XJCompiler {
     final ArrayList<File> tempFiles = new ArrayList<>();
     try {
       final URL xsd11to10 = Thread.currentThread().getContextClassLoader().getResource("xsd-1.1-to-1.0.xsl");
-      for (final URI schema : command.getSchemas()) { // [S]
+      for (final URI schema : schemas) { // [S]
         final File file = File.createTempFile(URIs.getName(schema), "");
         args.add(file.getAbsolutePath());
         tempFiles.add(file);
@@ -703,8 +705,9 @@ public final class XJCompiler {
       throw new RuntimeException(e);
     }
 
-    if (command.getXJBs() != null) {
-      for (final URI xjb : command.getXJBs()) { // [S]
+    final LinkedHashSet<URI> xjbs = command.getXJBs();
+    if (xjbs != null && xjbs.size() > 0) {
+      for (final URI xjb : xjbs) { // [S]
         args.add("-b");
         if (URIs.isLocalFile(xjb)) {
           args.add(xjb.getPath());
