@@ -803,7 +803,7 @@ public final class XJCompiler {
     final byte[] b2 = new byte[b1.length];
 
     try (final RandomAccessFile raf = new RandomAccessFile(file, "rw")) {
-      for (String line; (line = raf.readLine()) != null;) { // [X]
+      for (String line; (line = raf.readLine()) != null;) { // [ST]
         if (line.regionMatches(0, insert, 0, insert.length() - 1))
           return;
 
