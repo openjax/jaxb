@@ -750,11 +750,11 @@ public final class XJCompiler {
         final String line = buffer.toString();
         buffer.setLength(0);
         if (line.startsWith("[ERROR] "))
-          logger.error(line.substring(8));
+          if (logger.isErrorEnabled()) logger.error(line.substring(8));
         else if (line.startsWith("[WARNING] "))
-          logger.warn(line.substring(10));
+          if (logger.isWarnEnabled()) logger.warn(line.substring(10));
         else
-          logger.info(line);
+          if (logger.isInfoEnabled()) logger.info(line);
       }
     };
 
