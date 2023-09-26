@@ -85,8 +85,7 @@ public final class XJCompiler {
     private boolean disableXmlSecurity;
 
     /**
-     * When on, generates content property for types with multiple xs:any derived elements (which is supposed to be correct
-     * behavior).
+     * When on, generates content property for types with multiple xs:any derived elements (which is supposed to be correct behavior).
      */
     private boolean contentForWildcard;
 
@@ -749,11 +748,14 @@ public final class XJCompiler {
         final String line = buffer.toString();
         buffer.setLength(0);
         if (line.startsWith("[ERROR] "))
-          if (logger.isErrorEnabled()) logger.error(line.substring(8));
-        else if (line.startsWith("[WARNING] "))
-          if (logger.isWarnEnabled()) logger.warn(line.substring(10));
-        else
-          if (logger.isInfoEnabled()) logger.info(line);
+          if (logger.isErrorEnabled()) {
+            logger.error(line.substring(8));
+          }
+          else if (line.startsWith("[WARNING] "))
+            if (logger.isWarnEnabled()) {
+              logger.warn(line.substring(10));
+            }
+            else if (logger.isInfoEnabled()) { logger.info(line); }
       }
     };
 
