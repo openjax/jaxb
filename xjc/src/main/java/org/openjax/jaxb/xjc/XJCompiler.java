@@ -28,10 +28,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.Permission;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashSet;
-import java.util.List;
 
 import javax.activation.DataSource;
 import javax.xml.bind.JAXBContext;
@@ -570,7 +568,7 @@ public final class XJCompiler {
     if (schemas == null || schemas.size() == 0)
       return;
 
-    final List<String> args = new ArrayList<>();
+    final ArrayList<String> args = new ArrayList<>();
     final LinkedHashSet<File> classpath = command.classpath;
     if (classpath.size() > 0) {
       args.add("-cp");
@@ -839,10 +837,14 @@ public final class XJCompiler {
     }
   }
 
-  private static List<String> addJavaArgs(final List<String> args, final boolean addClassPath) {
-    args.addAll(0, Arrays.asList("-Dcom.sun.tools.xjc.XJCFacade.nohack=true", "-Dcom.sun.tools.xjc.Options.findServices=true"));
-    if (addClassPath)
-      args.addAll(0, Arrays.asList("-cp", System.getProperty("java.class.path"), XJCFacade.class.getName()));
+  private static ArrayList<String> addJavaArgs(final ArrayList<String> args, final boolean addClassPath) {
+    args.add(0, "-Dcom.sun.tools.xjc.XJCFacade.nohack=true");
+    args.add(1, "-Dcom.sun.tools.xjc.Options.findServices=true");
+    if (addClassPath) {
+      args.add(0, "-cp");
+      args.add(1, System.getProperty("java.class.path"));
+      args.add(2, XJCFacade.class.getName());
+    }
 
     args.add(0, "java");
     return args;
