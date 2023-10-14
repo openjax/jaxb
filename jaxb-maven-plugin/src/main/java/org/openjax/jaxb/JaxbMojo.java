@@ -306,7 +306,7 @@ public class JaxbMojo extends GeneratorMojo {
       if (bindings != null && bindings.size() > 0)
         command.setXJBs(new LinkedHashSet<>(bindings).stream().map(URI::create).collect(Collectors.toCollection(LinkedHashSet::new)));
 
-      command.addClasspath(MojoUtil.getExecutionClasspath(project, execution, (PluginDescriptor)this.getPluginContext().get("pluginDescriptor"), session.getLocalRepository(), artifactHandler));
+      command.addClasspath(MojoUtil.getExecutionClasspath(getProject(), getExecution(), (PluginDescriptor)this.getPluginContext().get("pluginDescriptor"), getSession().getLocalRepository(), artifactHandler));
       XJCompiler.compile(command);
     }
     catch (final JAXBException e) {
