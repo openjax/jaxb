@@ -306,7 +306,7 @@ public final class XJCompiler {
     }
 
     public boolean getDebug() {
-      return this.debug;
+      return debug;
     }
 
     public void setDebug(final boolean debug) {
@@ -314,7 +314,7 @@ public final class XJCompiler {
     }
 
     public boolean getSuppressWarnings() {
-      return this.suppressWarnings;
+      return suppressWarnings;
     }
 
     public void setSuppressWarnings(final boolean suppressWarnings) {
@@ -322,7 +322,7 @@ public final class XJCompiler {
     }
 
     public boolean getReadOnly() {
-      return this.readOnly;
+      return readOnly;
     }
 
     public void setReadOnly(final boolean readOnly) {
@@ -330,7 +330,7 @@ public final class XJCompiler {
     }
 
     public boolean getNoHeader() {
-      return this.noHeader;
+      return noHeader;
     }
 
     public void setNoHeader(final boolean noHeader) {
@@ -378,7 +378,7 @@ public final class XJCompiler {
     }
 
     public String getJavaModule() {
-      return this.javaModule;
+      return javaModule;
     }
 
     public void setJavaModule(final String javaModule) {
@@ -386,7 +386,7 @@ public final class XJCompiler {
     }
 
     public File getHttpProxyFile() {
-      return this.httpProxyFile;
+      return httpProxyFile;
     }
 
     public void setHttpProxyFile(final File httpProxyFile) {
@@ -394,7 +394,7 @@ public final class XJCompiler {
     }
 
     public String getHttpProxy() {
-      return this.httpProxy;
+      return httpProxy;
     }
 
     public void setHttpProxy(final String httpProxy) {
@@ -402,7 +402,7 @@ public final class XJCompiler {
     }
 
     public boolean getAddGeneratedAnnotation() {
-      return this.addGeneratedAnnotation;
+      return addGeneratedAnnotation;
     }
 
     public void setAddGeneratedAnnotation(final boolean addGeneratedAnnotation) {
@@ -410,7 +410,7 @@ public final class XJCompiler {
     }
 
     public File getCatalog() {
-      return this.catalog;
+      return catalog;
     }
 
     public void setCatalog(final File catalog) {
@@ -418,7 +418,7 @@ public final class XJCompiler {
     }
 
     public boolean getOverwrite() {
-      return this.overwrite;
+      return overwrite;
     }
 
     public void setOverwrite(final boolean overwrite) {
@@ -426,7 +426,7 @@ public final class XJCompiler {
     }
 
     public boolean getEnableIntrospection() {
-      return this.enableIntrospection;
+      return enableIntrospection;
     }
 
     public void setEnableIntrospection(final boolean enableIntrospection) {
@@ -434,7 +434,7 @@ public final class XJCompiler {
     }
 
     public String getEncoding() {
-      return this.encoding;
+      return encoding;
     }
 
     public void setEncoding(final String encoding) {
@@ -442,7 +442,7 @@ public final class XJCompiler {
     }
 
     public boolean getExtension() {
-      return this.extension;
+      return extension;
     }
 
     public void setExtension(final boolean extension) {
@@ -450,7 +450,7 @@ public final class XJCompiler {
     }
 
     public boolean getGenerateEpisode() {
-      return this.generateEpisode;
+      return generateEpisode;
     }
 
     public void setGenerateEpisode(final boolean generateEpisode) {
@@ -458,7 +458,7 @@ public final class XJCompiler {
     }
 
     public boolean getLaxSchemaValidation() {
-      return this.laxSchemaValidation;
+      return laxSchemaValidation;
     }
 
     public void setLaxSchemaValidation(final boolean laxSchemaValidation) {
@@ -466,7 +466,7 @@ public final class XJCompiler {
     }
 
     public boolean getNoGeneratedHeaderComments() {
-      return this.noGeneratedHeaderComments;
+      return noGeneratedHeaderComments;
     }
 
     public void setNoGeneratedHeaderComments(final boolean noGeneratedHeaderComments) {
@@ -474,7 +474,7 @@ public final class XJCompiler {
     }
 
     public boolean getNoPackageLevelAnnotations() {
-      return this.noPackageLevelAnnotations;
+      return noPackageLevelAnnotations;
     }
 
     public void setNoPackageLevelAnnotations(final boolean noPackageLevelAnnotations) {
@@ -482,7 +482,7 @@ public final class XJCompiler {
     }
 
     public File getDestDir() {
-      return this.destDir;
+      return destDir;
     }
 
     public void setDestDir(final File destDir) {
@@ -490,7 +490,7 @@ public final class XJCompiler {
     }
 
     public String getPackageName() {
-      return this.packageName;
+      return packageName;
     }
 
     public void setPackageName(final String packageName) {
@@ -498,7 +498,7 @@ public final class XJCompiler {
     }
 
     public boolean getQuiet() {
-      return this.quiet;
+      return quiet;
     }
 
     public void setQuiet(final boolean quiet) {
@@ -506,7 +506,7 @@ public final class XJCompiler {
     }
 
     public LinkedHashSet<URI> getSchemas() {
-      return this.schemas;
+      return schemas;
     }
 
     public void setSchemas(final LinkedHashSet<URI> schemas) {
@@ -514,7 +514,7 @@ public final class XJCompiler {
     }
 
     public SourceType getSourceType() {
-      return this.sourceType;
+      return sourceType;
     }
 
     public void setSourceType(final SourceType sourceType) {
@@ -522,7 +522,7 @@ public final class XJCompiler {
     }
 
     public TargetVersion getTargetVersion() {
-      return this.targetVersion;
+      return targetVersion;
     }
 
     public void setTargetVersion(final TargetVersion targetVersion) {
@@ -530,7 +530,7 @@ public final class XJCompiler {
     }
 
     public boolean getVerbose() {
-      return this.verbose;
+      return verbose;
     }
 
     public void setVerbose(final boolean verbose) {
@@ -538,7 +538,7 @@ public final class XJCompiler {
     }
 
     public LinkedHashSet<URI> getXJBs() {
-      return this.xjbs;
+      return xjbs;
     }
 
     public void setXJBs(final LinkedHashSet<URI> xjbs) {
