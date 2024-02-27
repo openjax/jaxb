@@ -22,11 +22,11 @@
   <parent>
     <groupId>org.openjax</groupId>
     <artifactId>openjax</artifactId>
-    <version>2.5.7-SNAPSHOT</version>
+    <version>2.5.7</version>
   </parent>
   <groupId>org.openjax.jaxb</groupId>
   <artifactId>jaxb</artifactId>
-  <version>0.8.8-SNAPSHOT</version>
+  <version>0.8.8</version>
   <packaging>pom</packaging>
   <name>OpenJAX JAXB</name>
   <description>

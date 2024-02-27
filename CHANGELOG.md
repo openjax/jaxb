@@ -1,6 +1,10 @@
 # Changes by Version
 
-## [v0.8.8-SNAPSHOT](https://github.com/libj/util/compare/5aacfb89bad1974f389cfd0194f06b6d3d9bb8dd..HEAD)
+## [v0.8.9-SNAPSHOT](https://github.com/libj/util/compare/e2270c36dfeb0386c9d015edabba2f385bb4fb03..HEAD)
+
+## [v0.8.8](https://github.com/libj/util/compare/5aacfb89bad1974f389cfd0194f06b6d3d9bb8dd..e2270c36dfeb0386c9d015edabba2f385bb4fb03) (2024-02-27)
+* #6 `JaxbMojo` use mojo parameters provided by `BaseMojo`
+* #5 Redeclare `List` as `ArrayList`
 
 ## [v0.8.7](https://github.com/openjax/jaxb/compare/b15872f2de5d1b910f4b7d03a19b1cdffb37abd1..5aacfb89bad1974f389cfd0194f06b6d3d9bb8dd) (2023-09-20)
 * #3 Auto-Convert v1.1 XSDs to v1.0
